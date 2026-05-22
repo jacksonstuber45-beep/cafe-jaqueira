@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Café Jaqueira — Requisições v1778636226</title>
+<title>Café Recife Antigo — Requisições v1778636226</title>
 <style>
 :root{
   --verde:#1A3A2A;--verde-m:#2D6A4F;--verde-c:#40916C;--verde-bg:#D8F3DC;
@@ -64,7 +64,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 .busca-wrap input:focus{border-color:var(--verde-c);background:#fff}
 
 /* LISTA ITENS */
-.cat-sep{padding:10px 14px 6px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#fff;background:var(--verde-m);position:sticky;top:0;border-left:4px solid var(--verde-c)}
+.cat-sep{padding:7px 14px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--texto2);background:var(--cinza);position:sticky;top:0}
 .item-row{background:#fff;border-bottom:1px solid var(--borda);padding:11px 14px;display:flex;align-items:center;gap:10px;transition:border-left .2s}
 .item-row.tem-qtd{border-left:3px solid var(--verde-c)}
 .item-info{flex:1}
@@ -78,12 +78,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 
 /* BARRA BOTTOM */
 .barra-bot{position:fixed;bottom:0;left:0;right:0;z-index:50}
-.resumo-float{background:var(--verde);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.resumo-float{background:var(--verde);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.resumo-float.show{pointer-events:auto}
 .resumo-float.show{transform:translateY(0)}
 .res-txt strong{font-size:16px;display:block}
 .res-txt span{font-size:12px;opacity:.7}
 .btn-ver-res{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
-.btn-enviar-req{width:100%;padding:17px;border:none;font-size:16px;font-weight:700;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.btn-enviar-req{width:100%;padding:17px;border:none;font-size:16px;font-weight:700;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s;position:relative;z-index:60}
 .btn-enviar-req:disabled{opacity:.6}
 
 /* OVERLAY / MODAL */
@@ -150,26 +151,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 .btn-confirmar-ped{width:100%;padding:12px;border:none;border-radius:10px;background:var(--verde-c);color:#fff;font-size:14px;font-weight:700;cursor:pointer}
 .btn-confirmar-ped:disabled{background:var(--verde-bg);color:var(--verde-m);cursor:default}
 .estoq-export{margin:12px;padding:15px;border:none;border-radius:14px;background:var(--laranja);color:#fff;font-size:15px;font-weight:700;cursor:pointer;width:calc(100% - 24px);box-shadow:0 4px 12px rgba(230,81,0,.3);display:flex;align-items:center;justify-content:center;gap:8px}
-.mov-card{background:#fff;margin:8px 12px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);overflow:hidden}
-.mov-hdr{padding:14px;border-bottom:1px solid var(--borda);display:flex;align-items:center;gap:10px}
-.mov-icon{font-size:28px}
-.mov-titulo{font-size:16px;font-weight:700}
-.mov-sub{font-size:12px;color:var(--texto2);margin-top:2px}
-.mov-item-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--borda);gap:10px}
-.mov-item-row:last-child{border:none}
-.mov-item-nome{flex:1;font-size:14px;font-weight:600}
-.mov-item-unid{font-size:11px;color:var(--texto2)}
-.mov-qtd-inp{width:70px;height:38px;border:2px solid var(--borda);border-radius:8px;text-align:center;font-size:16px;font-weight:700;outline:none;color:var(--texto)}
-.mov-qtd-inp:focus{border-color:var(--verde-c)}
-.mov-qtd-inp.tem-valor{border-color:var(--verde-c);background:var(--verde-bg);color:var(--verde)}
-.mov-footer{padding:12px 14px}
-.btn-mov{width:100%;padding:13px;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-.mov-tabs{display:flex;gap:6px;padding:10px 12px;background:var(--cinza);border-bottom:1px solid var(--borda);overflow-x:auto}
-.mov-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--borda);background:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--texto2)}
-.mov-tab.ativo{color:#fff;border-color:transparent}
-.resumo-mov{margin:8px 12px;padding:12px 14px;border-radius:12px;background:var(--verde-bg);border-left:4px solid var(--verde-c)}
-.resumo-mov-titulo{font-size:13px;font-weight:700;color:var(--verde);margin-bottom:6px}
-.resumo-mov-item{font-size:13px;color:var(--verde-m);padding:2px 0}
 .empty-state{text-align:center;padding:48px 20px;color:var(--texto2)}
 .empty-state .ei{font-size:48px;margin-bottom:12px}
 
@@ -184,16 +165,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 <!-- ══════════ HOME ══════════ -->
 <div class="tela ativa" id="tela-home">
   <div class="home-hero">
-    <h1>Café <span>Jaqueira</span></h1>
+    <h1>Café <span>Recife Antigo</span></h1>
     <p>Sistema de Requisições Internas</p>
     <div class="home-data" id="home-data-txt"></div>
     <div class="loja-sel">
       <button class="loja-btn ativo" onclick="setLoja('JAQUEIRA',this)">🏠 Jaqueira</button>
       <button class="loja-btn" onclick="setLoja('RECIFE',this)">🏪 Recife</button>
     </div>
-    <button onclick="abrirTela('tela-instrucoes')" style="margin-top:12px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer">
-      📖 Como usar o app
-    </button>
   </div>
   <div class="cards-wrap">
     <div class="div-label">Selecione seu setor</div>
@@ -219,14 +197,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
         <div class="s-nome">Cozinha Quente</div>
         <div class="s-desc">SPs, proteínas, câmara e congelados</div>
         <div class="s-badge" id="badge-cozinha_quente">—</div>
-      </div>
-    </button>
-    <button class="setor-card" style="background:linear-gradient(135deg,#00695C,#00897B)" onclick="abrirSetor('cozinha_recife')">
-      <span class="s-icon">🏪</span>
-      <div style="flex:1">
-        <div class="s-nome">Cozinha Recife Antigo</div>
-        <div class="s-desc">Freeze, geladeiras, balcões e estoque seco</div>
-        <div class="s-badge" id="badge-cozinha_recife">—</div>
       </div>
     </button>
     <button class="setor-card card-bar" onclick="abrirSetor('bar')">
@@ -326,37 +296,37 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
     <button class="estoq-tab" onclick="setEstoqTab('todos',this)">📋 Todos</button>
   </div>
   <div class="content-scroll" id="estoq-lista"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 12px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px">
     <button onclick="abrirMovimento('entrada')"
-      style="padding:14px 8px;border:none;border-radius:12px;background:#1565C0;color:#fff;font-size:13px;font-weight:700;cursor:pointer">
+      style="padding:14px 8px;border:none;border-radius:12px;background:#1565C0;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(21,101,192,.3)">
       📥 Entrada<br>Mercadoria
     </button>
     <button onclick="abrirMovimento('transferencia')"
-      style="padding:14px 8px;border:none;border-radius:12px;background:#6A1B9A;color:#fff;font-size:13px;font-weight:700;cursor:pointer">
+      style="padding:14px 8px;border:none;border-radius:12px;background:#6A1B9A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(106,27,154,.3)">
       🔄 Trans-<br>ferência
     </button>
     <button onclick="abrirMovimento('clube17')"
-      style="padding:14px 8px;border:none;border-radius:12px;background:#BF360C;color:#fff;font-size:13px;font-weight:700;cursor:pointer">
+      style="padding:14px 8px;border:none;border-radius:12px;background:#BF360C;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(191,54,12,.3)">
       🏢 Saída<br>Clube 17
     </button>
     <button onclick="exportarCSVDia()"
-      style="padding:14px 8px;border:none;border-radius:12px;background:var(--laranja);color:#fff;font-size:13px;font-weight:700;cursor:pointer">
+      style="padding:14px 8px;border:none;border-radius:12px;background:var(--laranja);color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(230,81,0,.3)">
       ⬇️ Exportar<br>CSV Dia
     </button>
   </div>
 </div>
 
-<!-- ══════════ TELA ENTRADA DE MERCADORIA ══════════ -->
+
+<!-- ══════════ TELA ENTRADA MERCADORIA ══════════ -->
 <div class="tela" id="tela-entrada">
   <div class="hdr" style="background:#1565C0">
     <div class="hdr-row">
       <button class="btn-back" onclick="abrirTela('tela-estoquista')">← Voltar</button>
-      <span class="hdr-titulo">📥 Entrada de Mercadoria</span>
-      <div style="width:40px"></div>
+      <span class="hdr-titulo">📥 Entrada Mercadoria</span>
+      <div style="width:60px"></div>
     </div>
-    <div class="hdr-sub" id="entrada-sub">Registre o que chegou hoje</div>
+    <div class="hdr-sub">Registre o que chegou hoje</div>
   </div>
-  <div class="mov-tabs" id="entrada-cats"></div>
   <div class="busca-wrap">
     <input type="search" placeholder="🔍 Buscar item..." id="entrada-busca" oninput="renderMovimento('entrada')" autocomplete="off">
   </div>
@@ -378,30 +348,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
     <div class="hdr-row">
       <button class="btn-back" onclick="abrirTela('tela-estoquista')">← Voltar</button>
       <span class="hdr-titulo">🔄 Transferência</span>
-      <div style="width:40px"></div>
+      <div style="width:60px"></div>
     </div>
-    <div class="hdr-sub" id="transf-sub">Registre o que foi transferido</div>
+    <div class="hdr-sub" id="transf-sub">Saindo da loja atual</div>
   </div>
-  <div style="padding:10px 12px;background:#fff;border-bottom:1px solid var(--borda)">
-    <div style="font-size:12px;font-weight:700;color:var(--texto2);margin-bottom:6px">DIREÇÃO DA TRANSFERÊNCIA:</div>
-    <div style="display:flex;gap:8px">
-      <button id="btn-jaq-rec" onclick="setTransfDir('JAQ_REC')"
-        style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--verde-c);background:var(--verde);color:#fff;font-size:13px;font-weight:700;cursor:pointer">
-        🏠 JAQ → 🏪 REC
-      </button>
-      <button id="btn-rec-jaq" onclick="setTransfDir('REC_JAQ')"
-        style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--borda);background:#fff;color:var(--texto2);font-size:13px;font-weight:700;cursor:pointer">
-        🏪 REC → 🏠 JAQ
-      </button>
+  <div style="background:#fff;padding:10px 12px;border-bottom:1px solid var(--borda)">
+    <div style="font-size:11px;font-weight:700;color:var(--texto2);margin-bottom:6px;text-align:center">DESTINO DA TRANSFERÊNCIA:</div>
+    <div style="display:flex;gap:6px" id="transf-destinos">
+      <!-- preenchido por JS baseado na loja atual -->
     </div>
   </div>
   <div class="busca-wrap">
     <input type="search" placeholder="🔍 Buscar item..." id="transf-busca" oninput="renderMovimento('transferencia')" autocomplete="off">
   </div>
-  <div class="content-scroll" id="transf-lista"></div>
+  <div class="content-scroll" id="transferencia-lista"></div>
   <div class="barra-bot">
-    <div class="resumo-float" id="transf-resumo">
-      <div class="res-txt"><strong id="transf-count">0 itens</strong><span>para transferir</span></div>
+    <div class="resumo-float" id="transferencia-resumo">
+      <div class="res-txt"><strong id="transferencia-count">0 itens</strong><span>para transferir</span></div>
       <button class="btn-ver-res" onclick="confirmarMovimento('transferencia')">Confirmar</button>
     </div>
     <button class="btn-enviar-req" onclick="confirmarMovimento('transferencia')" style="background:#6A1B9A">
@@ -416,7 +379,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
     <div class="hdr-row">
       <button class="btn-back" onclick="abrirTela('tela-estoquista')">← Voltar</button>
       <span class="hdr-titulo">🏢 Saída Clube 17</span>
-      <div style="width:40px"></div>
+      <div style="width:60px"></div>
     </div>
     <div class="hdr-sub">Registre os itens enviados para o Clube 17</div>
   </div>
@@ -480,188 +443,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
     <div class="alerta-confirm-sub" id="alerta-sub">O estoquista confirmou sua requisição</div>
     <div id="alerta-itens"></div>
     <button class="btn-fechar-alerta" onclick="fecharAlerta()">OK, entendido</button>
-  </div>
-</div>
-
-<!-- ══════════ TELA INSTRUÇÕES ══════════ -->
-<div class="tela" id="tela-instrucoes">
-  <div class="hdr" style="background:var(--verde)">
-    <div class="hdr-row">
-      <button class="btn-back" onclick="abrirTela('tela-home')">← Voltar</button>
-      <span class="hdr-titulo">📖 Como usar o app</span>
-      <div style="width:40px"></div>
-    </div>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding:16px;padding-bottom:40px;display:flex;flex-direction:column;gap:16px">
-
-    <!-- Setor: Cozinha / Bar / Produção -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)">
-      <div style="background:linear-gradient(135deg,#1A3A2A,#40916C);padding:14px 16px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:28px">🍳</span>
-        <div>
-          <div style="font-size:16px;font-weight:700;color:#fff">Cozinha / Bar / Produção</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.7)">Como fazer uma requisição</div>
-        </div>
-      </div>
-      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">1</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Escolha seu setor</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Na tela inicial, toca no card do seu setor (Cozinha Quente, Bar/Barista, Produção etc)</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">2</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Adicione os itens</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Use + e − para colocar a quantidade. Ou busca o item pelo nome no campo de busca</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">3</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Envie para o estoquista</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Toca em "Enviar requisição ao estoquista". O pedido chega na hora no celular dele</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">4</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Aguarde a confirmação</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Quando o estoquista separar os itens, <strong>o celular toca 3 bipes</strong> e aparece uma tela mostrando o que foi entregue. Se faltar algum item, aparece em vermelho 🔴</div>
-          </div>
-        </div>
-        <div style="background:var(--amar-bg);border-radius:10px;padding:10px 12px;border-left:3px solid var(--amar)">
-          <div style="font-size:12px;font-weight:700;color:var(--amar)">⚠️ IMPORTANTE</div>
-          <div style="font-size:12px;color:var(--texto2);margin-top:3px">Deixa o app aberto para receber o alarme quando o estoquista confirmar</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Setor: Estoquista -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)">
-      <div style="background:linear-gradient(135deg,#E65100,#FF8F00);padding:14px 16px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:28px">📦</span>
-        <div>
-          <div style="font-size:16px;font-weight:700;color:#fff">Estoquista</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.7)">Como confirmar pedidos e registrar movimentações</div>
-        </div>
-      </div>
-      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
-        <div style="font-size:13px;font-weight:700;color:var(--texto2);text-transform:uppercase;letter-spacing:.05em">📋 Confirmar requisições</div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--laranja);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">1</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Toca em Estoquista</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Na tela inicial toca no card laranja "Estoquista". Toca em 🔄 para atualizar e ver pedidos novos</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--laranja);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">2</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Digite a quantidade entregue</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Para cada item, digita quanto você está entregando. Se não tiver, deixa 0. O campo fica <span style="color:var(--verm);font-weight:700">vermelho</span> quando a quantidade for menor que o pedido</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--laranja);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">3</div>
-          <div>
-            <div style="font-size:14px;font-weight:700">Confirma a entrega</div>
-            <div style="font-size:13px;color:var(--texto2);margin-top:2px">Toca em "Confirmar entrega". O app notifica a cozinha automaticamente e baixa o CSV</div>
-          </div>
-        </div>
-        <div style="height:1px;background:var(--borda);margin:4px 0"></div>
-        <div style="font-size:13px;font-weight:700;color:var(--texto2);text-transform:uppercase;letter-spacing:.05em">📥 Outras movimentações</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;gap:10px;align-items:center;background:var(--azul-bg);border-radius:10px;padding:10px">
-            <span style="font-size:22px">📥</span>
-            <div><div style="font-size:13px;font-weight:700">Entrada de Mercadoria</div><div style="font-size:12px;color:var(--texto2)">Quando chegou produto do fornecedor — registra o que chegou e a quantidade</div></div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;background:var(--roxo-bg);border-radius:10px;padding:10px">
-            <span style="font-size:22px">🔄</span>
-            <div><div style="font-size:13px;font-weight:700">Transferência</div><div style="font-size:12px;color:var(--texto2)">Mandou itens de Jaqueira para Recife (ou vice-versa) — escolhe a direção e registra</div></div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;background:var(--verm-bg);border-radius:10px;padding:10px">
-            <span style="font-size:22px">🏢</span>
-            <div><div style="font-size:13px;font-weight:700">Saída Clube 17</div><div style="font-size:12px;color:var(--texto2)">Quando enviou itens para o Clube 17 — registra o que saiu</div></div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;background:var(--laranja-bg);border-radius:10px;padding:10px">
-            <span style="font-size:22px">⬇️</span>
-            <div><div style="font-size:13px;font-weight:700">Exportar CSV do Dia</div><div style="font-size:12px;color:var(--texto2)">No final do dia — exporta TUDO (requisições + entradas + transferências) para a planilha Excel</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Como importar CSV no Excel -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)">
-      <div style="background:linear-gradient(135deg,#1565C0,#1976D2);padding:14px 16px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:28px">📊</span>
-        <div>
-          <div style="font-size:16px;font-weight:700;color:#fff">Importar CSV na Planilha</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.7)">Como alimentar o Excel com os dados do dia</div>
-        </div>
-      </div>
-      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--azul);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">1</div>
-          <div><div style="font-size:14px;font-weight:700">Exporta o CSV do dia</div><div style="font-size:13px;color:var(--texto2);margin-top:2px">No app do estoquista, toca em "⬇️ Exportar CSV do Dia"</div></div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--azul);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">2</div>
-          <div><div style="font-size:14px;font-weight:700">Abre o Excel</div><div style="font-size:13px;color:var(--texto2);margin-top:2px">Abre a planilha PLANILHA_COM_FICHAS_COZINHA.xlsx</div></div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:28px;height:28px;background:var(--azul);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">3</div>
-          <div><div style="font-size:14px;font-weight:700">Vai na aba IMPORTAR_CSV</div><div style="font-size:13px;color:var(--texto2);margin-top:2px">Cola o conteúdo do CSV nessa aba — a planilha atualiza o estoque automaticamente</div></div>
-        </div>
-        <div style="background:var(--verde-bg);border-radius:10px;padding:10px 12px;border-left:3px solid var(--verde-c)">
-          <div style="font-size:12px;font-weight:700;color:var(--verde)">✅ RESULTADO</div>
-          <div style="font-size:12px;color:var(--texto2);margin-top:3px">Todas as saídas, entradas e transferências do dia aparecem automaticamente nas abas MATRIZ e FILIAL</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Histórico de Faltas -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)">
-      <div style="background:linear-gradient(135deg,#C62828,#E53935);padding:14px 16px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:28px">📋</span>
-        <div>
-          <div style="font-size:16px;font-weight:700;color:#fff">Histórico de Faltas</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.7)">Para gerência — ver o que faltou no estoque</div>
-        </div>
-      </div>
-      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:13px;color:var(--texto2)">Toca em "📋 Histórico de Faltas" na tela inicial. Mostra todos os itens que faltaram ou foram entregues parcialmente, por data e setor.</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <span style="background:var(--verm-bg);color:var(--verm);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">🔴 Sem estoque</span>
-          <span style="background:var(--amar-bg);color:var(--amar);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">🟡 Entregue parcial</span>
-          <span style="background:var(--verde-bg);color:var(--verde);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">✅ Entregue completo</span>
-        </div>
-        <div style="font-size:13px;color:var(--texto2)">Use essas informações para ajustar o estoque mínimo na planilha Excel e nunca mais faltar!</div>
-      </div>
-    </div>
-
-    <!-- Reset diário -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)">
-      <div style="background:linear-gradient(135deg,#37474F,#546E7A);padding:14px 16px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:28px">🔄</span>
-        <div>
-          <div style="font-size:16px;font-weight:700;color:#fff">Reset semanal</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.7)">Para manter o app rápido</div>
-        </div>
-      </div>
-      <div style="padding:14px 16px;font-size:13px;color:var(--texto2);line-height:1.6">
-        Uma vez por semana, o gerente pode limpar os dados antigos do servidor:<br><br>
-        1. Acessa <strong>jsonbin.io</strong><br>
-        2. Entra em BINS → clica no bin<br>
-        3. Coloca <code style="background:var(--cinza);padding:2px 6px;border-radius:4px">{"requisicoes":[]}</code><br>
-        4. Clica Update<br><br>
-        Os dados do CSV já foram exportados para o Excel — pode limpar sem medo!
-      </div>
-    </div>
-
   </div>
 </div>
 
@@ -814,178 +595,38 @@ const ITENS = {
   ],
 
   bar: [
-    // BEBIDAS
-    {cat:'BEBIDAS', nome:'Água sem Gás', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Água com Gás', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Chantilly', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Coca Cola', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Coca Cola Zero', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Fanta', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Guaraná Antártica', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Guaraná Antártica Zero', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Heineken', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Iogurte Natural', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Leite Integral', unid:'L'},
-    {cat:'BEBIDAS', nome:'Leitíssimo', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Mel', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Nude Bebida Vegetal', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Red Bull', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Red Bull Zero Açúcar', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Schweppes Citrus', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Sprite', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Tônica Antártica', unid:'unid'},
-    {cat:'BEBIDAS', nome:'Xarope de Guaraná', unid:'unid'},
-    // SORVETE
-    {cat:'SORVETE', nome:'Sorvete Baunilha', unid:'unid'},
-    {cat:'SORVETE', nome:'Sorvete Cappuccino', unid:'unid'},
-    {cat:'SORVETE', nome:'Sorvete Chocolate', unid:'unid'},
-    {cat:'SORVETE', nome:'Sorvete Creme', unid:'unid'},
-    {cat:'SORVETE', nome:'Sorvete Morango', unid:'unid'},
-    // MONIN
-    {cat:'MONIN / XAROPES', nome:'Purê Maracujá', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Purê Morango', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Purê Pêssego', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Cookies', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Cranberry', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Grenadine', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Limão Siciliano', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Maçã Verde', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Morango', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Pêssego', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Maracujá', unid:'unid'},
-    {cat:'MONIN / XAROPES', nome:'Xarope Tangerina', unid:'unid'},
-    // DESTILADOS
-    {cat:'DESTILADOS', nome:'Chivas', unid:'unid'},
-    {cat:'DESTILADOS', nome:'Licor', unid:'unid'},
-    {cat:'DESTILADOS', nome:'Red Label', unid:'unid'},
-    {cat:'DESTILADOS', nome:'Vodca Importada', unid:'unid'},
-    {cat:'DESTILADOS', nome:'Vodca Nacional', unid:'unid'},
-    // INSUMOS / ESTOQUE SECO
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Adoçante Líquido', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Açúcar Cristal', unid:'kg'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Azeite Garrafa 250ml', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Cacau 100%', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Cacau 50%', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Calda Sorvete Caramelo', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Calda Sorvete Chocolate', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Calda Sorvete Morango', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Canela em Pó', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Cápsula Café Descafeinado', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Chocolate em Barra ao Leite', unid:'kg'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Doce de Leite', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Erva Mate', unid:'pct'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Leite Condensado Lata 395g', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Leite de Coco 200ml', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Nescau', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Nutella', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Ovomaltine', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Paçoca', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Pimenta Tabasco', unid:'unid'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Sachê de Açúcar', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Sachê Adoçante', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Sachê de Ketchup', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Sachê de Maionese', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Sachê de Mostarda', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Sachê de Sal', unid:'caixa'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'SP Chocolate Quente', unid:'L'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'SP Crumble', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'SP Granola', unid:'pote'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'SP Geleia de Frutas Vermelhas', unid:'L'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'SP Ganache de Café', unid:'L'},
-    {cat:'INSUMOS / ESTOQUE SECO', nome:'Biscoito Maizena', unid:'pct'},
-    // DETOX
-    {cat:'DETOX / SUCOS', nome:'Detox Verde e Vermelho', unid:'unid'},
-    {cat:'DETOX / SUCOS', nome:'Detox Verde (Porcionado)', unid:'unid'},
-    {cat:'DETOX / SUCOS', nome:'Detox Vermelho (Porcionado)', unid:'unid'},
-    // FRUTAS E POLPAS
-    {cat:'FRUTAS E POLPAS', nome:'Açaí', unid:'kg'},
-    {cat:'FRUTAS E POLPAS', nome:'Beterraba', unid:'kg'},
-    {cat:'FRUTAS E POLPAS', nome:'Cenoura', unid:'kg'},
-    {cat:'FRUTAS E POLPAS', nome:'Hortelã', unid:'maço'},
-    {cat:'FRUTAS E POLPAS', nome:'Laranja', unid:'kg'},
-    {cat:'FRUTAS E POLPAS', nome:'Limão', unid:'kg'},
-    {cat:'FRUTAS E POLPAS', nome:'Abacaxi', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Abacaxi (Porcionado)', unid:'pote'},
-    {cat:'FRUTAS E POLPAS', nome:'Frutas Vermelhas', unid:'pote'},
-    {cat:'FRUTAS E POLPAS', nome:'Morango Congelado', unid:'kg'},
-    {cat:'FRUTAS E POLPAS', nome:'Morango Fresco', unid:'bandeja'},
-    {cat:'FRUTAS E POLPAS', nome:'Morango (Porcionado)', unid:'pote'},
-    {cat:'FRUTAS E POLPAS', nome:'Frutas Vermelhas (Porcionada)', unid:'pote'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Cajá', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Maracujá', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Acerola', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Graviola', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Uva', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Tangerina', unid:'unid'},
-    {cat:'FRUTAS E POLPAS', nome:'Polpa Caju', unid:'unid'},
-    // DESCARTÁVEIS
-    {cat:'DESCARTÁVEIS', nome:'Paleta de Mexer (Transparente)', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Colher de Mexer (Madeira)', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Copo Térmico P', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Copo Térmico G', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Copo 180ml', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Copo Soulpack 350ml', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Copo de Suco Jaqueira', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Hamburgueira', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Embalagem Refeição', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Colher Refeição', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Garfo Refeição', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Gás Chantilly', unid:'unid'},
-    {cat:'DESCARTÁVEIS', nome:'Faca Refeição', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Colher Sobremesa', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Embalagem Tartelete', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Embalagem Cupcake', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Embalagem Brigadeiro', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Molheira com Tampa', unid:'unid'},
-    {cat:'DESCARTÁVEIS', nome:'Saquinho Papel Kraft', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Sacola iFood P', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Sacola iFood M', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Sacola iFood G', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Papel Filme', unid:'rolo'},
-    {cat:'DESCARTÁVEIS', nome:'Papel Seda Jaqueira', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Prato Descartável', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Bobina Congelamento P 20x30', unid:'rolo'},
-    {cat:'DESCARTÁVEIS', nome:'Bobina Congelamento M 30x40', unid:'rolo'},
-    {cat:'DESCARTÁVEIS', nome:'Bobina Congelamento G 40x60', unid:'rolo'},
-    {cat:'DESCARTÁVEIS', nome:'Canudo Fino', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Canudo Grosso', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Guardanapos', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Filtro V60', unid:'pct'},
-    {cat:'DESCARTÁVEIS', nome:'Filtro Koar', unid:'pct'},
-    // LIMPEZA
-    {cat:'LIMPEZA', nome:'Luvas Vinil G', unid:'caixa'},
-    {cat:'LIMPEZA', nome:'Toucas', unid:'pct'},
-    {cat:'LIMPEZA', nome:'Álcool 70%', unid:'L'},
-    {cat:'LIMPEZA', nome:'Pano Panflex', unid:'unid'},
-    {cat:'LIMPEZA', nome:'Detergente Neutro', unid:'unid'},
-    {cat:'LIMPEZA', nome:'Papel Toalha Interfoliado', unid:'pct'},
-    {cat:'LIMPEZA', nome:'Cafiza', unid:'unid'},
-    // SALGADOS
-    {cat:'SALGADOS', nome:'Pastel Frango (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Pastel Queijo (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Empada Frango (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Empada Camarão (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Pão de Queijo (Porção)', unid:'porção'},
-    {cat:'SALGADOS', nome:'Pão Vegano (Porção)', unid:'porção'},
-    {cat:'SALGADOS', nome:'Quiche Frango (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Quiche Queijo do Reino (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Quiche Espinafre (UND)', unid:'unid'},
-    {cat:'SALGADOS', nome:'Quiche Lorrayne (UND)', unid:'unid'},
-    // DOCES
-    {cat:'DOCES', nome:'Mono Bannof', unid:'unid'},
-    {cat:'DOCES', nome:'Mono Cookie', unid:'unid'},
-    {cat:'DOCES', nome:'Mono Limão', unid:'unid'},
-    {cat:'DOCES', nome:'Tartelete', unid:'unid'},
-    {cat:'DOCES', nome:'Cupcake', unid:'unid'},
-    {cat:'DOCES', nome:'Brigadeiro ao Leite', unid:'unid'},
-    {cat:'DOCES', nome:'Brigadeiro Amargo', unid:'unid'},
-    {cat:'DOCES', nome:'Pote Brownie', unid:'unid'},
-    {cat:'DOCES', nome:'Mono Noiva', unid:'unid'},
-    {cat:'DOCES', nome:'Pastel de Belém (Caixa)', unid:'caixa'},
-    {cat:'DOCES', nome:'Bolo de Rolo', unid:'unid'},
-    {cat:'DOCES', nome:'Slice Morango', unid:'unid'},
-    {cat:'DOCES', nome:'Slice Red Velvet', unid:'unid'},
-    {cat:'DOCES', nome:'Slice Brigadeiro', unid:'unid'},
+    {cat:'CAFÉ E BEBIDAS QUENTES', nome:'Café Espresso', unid:'kg'},
+    {cat:'CAFÉ E BEBIDAS QUENTES', nome:'Cacau em Pó', unid:'pote'},
+    {cat:'CAFÉ E BEBIDAS QUENTES', nome:'Chá Variados', unid:'caixa'},
+    {cat:'LATICÍNIOS', nome:'Leite Integral', unid:'L'},
+    {cat:'LATICÍNIOS', nome:'Leite sem Lactose', unid:'L'},
+    {cat:'LATICÍNIOS', nome:'Creme de Leite', unid:'caixa'},
+    {cat:'LATICÍNIOS', nome:'Manteiga', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Xarope Baunilha', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Xarope Caramelo', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Xarope Avelã', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Açúcar', unid:'kg'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Adoçante', unid:'caixa'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Canela em Pó', unid:'pote'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Ganache Café', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Chocolate Quente', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Geleia Frutas Vermelhas', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'Polpa de Fruta', unid:'kg'},
+    {cat:'CÂMARA RESFRIADA', nome:'Limão Taiti', unid:'kg'},
+    {cat:'CÂMARA RESFRIADA', nome:'Laranja', unid:'kg'},
+    {cat:'CÂMARA RESFRIADA', nome:'Morango', unid:'bandeja'},
+    {cat:'CÂMARA RESFRIADA', nome:'Hortelã', unid:'maço'},
+    {cat:'CÂMARA RESFRIADA', nome:'Gengibre', unid:'unid'},
+    {cat:'BEBIDAS', nome:'Água Mineral 600ml', unid:'fardo'},
+    {cat:'BEBIDAS', nome:'Água com Gás', unid:'fardo'},
+    {cat:'BEBIDAS', nome:'Suco Caixinha', unid:'caixa'},
+    {cat:'BEBIDAS', nome:'Refrigerante', unid:'unid'},
+    {cat:'DESCARTÁVEIS', nome:'Copo Café 50ml', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Copo Bebida 300ml', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Canudo', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Palito Mexedor', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Guardanapo', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Sacola Papel', unid:'pct'},
   ],
 
   retirada: [
@@ -1028,294 +669,35 @@ const ITENS = {
     {cat:'DOCES', nome:'COCADA FORNO CREMOSA - POTE', unid:'pote'},
   ],
 
-  cozinha_recife: [
-    // FREEZER BRANCA 1 — par stock indicado
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Mini Coxinhas', unid:'porção', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Churros', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Sopa Caldo Verde', unid:'pote', min:5},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Sopa Milho', unid:'pote', min:5},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Sopa Brócolis', unid:'pote', min:5},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Feijão Preto', unid:'pote', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Feijão Verde', unid:'pote', min:4},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Brócolis Queimado', unid:'porção', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Molho Escuro (pt 500ml)', unid:'unid', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Molho Teriaken (pt 1L)', unid:'unid', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Cogumelos', unid:'pote', min:3},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Cebola Caramelizada', unid:'pote', min:3},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Bacon Caramelizado', unid:'pote', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Frango Triturado', unid:'pote', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Salame', unid:'unid', min:1},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Espinafre', unid:'porção', min:1},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Coco Ralado (500g)', unid:'unid', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Carne Seca', unid:'porção', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Caponata', unid:'pote', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Parmesão Ralado (1kg)', unid:'unid', min:3},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Presunto (1kg)', unid:'unid', min:3},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Queijo do Reino (1kg)', unid:'unid', min:4},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Queijo Búfala (porção)', unid:'porção', min:10},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Mussarela Fatiada (1kg)', unid:'unid', min:6},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Queijo Manteiga (1kg)', unid:'unid', min:2},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Pão Integral (fatias)', unid:'pct', min:10},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Pão Italiano (fatias)', unid:'pct', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Pão Brioche (fatias)', unid:'pct', min:30},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Nhoque (porção)', unid:'porção', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Almôndegas (porção)', unid:'porção', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Arborio (porção)', unid:'porção', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Arroz Vermelho (porção)', unid:'porção', min:10},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Arroz Integral (porção)', unid:'porção', min:10},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'No Dog (unid)', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Cocada (unid)', unid:'unid', min:5},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Parme Veg. (unid)', unid:'unid', min:10},
-    {cat:'❄️ FREEZER BRANCA 1', nome:'Molho de Castanha (porção)', unid:'porção', min:20},
-    // FREEZER 2 — proteínas
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Parme Carne', unid:'unid', min:30},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Parme Frango', unid:'unid', min:50},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Isca de Carne', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Isca de Frango', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Paillard', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Carne de Sol', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Camarão Limpo', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Camarão Empanado', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Filé Tilápia', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Filé Salmão', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Isca Salmão', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Burguer', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Medalhão', unid:'unid', min:20},
-    {cat:'❄️ FREEZER BRANCA 2', nome:'Batata Palito', unid:'pote', min:6},
-    // GELADEIRA PRETA
-    {cat:'🖤 GELADEIRA PRETA', nome:'Clorofila (500ml)', unid:'unid', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Requeijão', unid:'unid', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Coalho Ralado (1kg)', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Coalho Barra (1kg)', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Manteiga (1kg)', unid:'unid', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Pesto (500ml)', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Coxinha (500ml)', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Confit', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Caesar (1kg)', unid:'unid', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Cereja (500g)', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Seco (1kg)', unid:'unid', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pasta Abacate (1kg)', unid:'unid', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Aiole (500ml)', unid:'unid', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pasta Ricota (500ml)', unid:'unid', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pasta de Alho (500ml)', unid:'unid', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Espaguete (pote)', unid:'pote', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Penne (pote)', unid:'pote', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Bacon Assado (pote)', unid:'pote', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Arroz Branco (pote)', unid:'pote', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Coentro', unid:'maço', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Salsa Crespa', unid:'maço', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Salsa Lisa', unid:'maço', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Alface Roxa', unid:'pct', min:15},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Alface Crespa', unid:'pct', min:15},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Cebola', unid:'unid', min:5},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Salada', unid:'unid', min:5},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Gengibre', unid:'unid', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Banana', unid:'palma', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Limão Siciliano', unid:'unid', min:7},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Limão Verde', unid:'unid', min:7},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Ovos (pote)', unid:'pote', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Batata Inglesa (pote)', unid:'pote', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Caldo Legumes', unid:'pote', min:1},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Tomate', unid:'pote', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Queijo', unid:'pote', min:3},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Peito Frango', unid:'unid', min:40},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Goma de Tapioca', unid:'pct', min:4},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pão Now Dog', unid:'pct', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pão Hamburguer', unid:'pct', min:2},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pão Francês', unid:'unid', min:20},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Pão Baguete', unid:'unid', min:20},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Croissant', unid:'unid', min:10},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Coxinha Frango (empanada)', unid:'unid', min:30},
-    {cat:'🖤 GELADEIRA PRETA', nome:'Coxinha Catupiry (empanada)', unid:'unid', min:30},
-    // ESTOQUE SECO
-    {cat:'📦 ESTOQUE SECO', nome:'Óleo Misto', unid:'unid', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Creme de Leite', unid:'unid', min:3},
-    {cat:'📦 ESTOQUE SECO', nome:'Margarina', unid:'unid', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Folha Louro', unid:'g', min:40},
-    {cat:'📦 ESTOQUE SECO', nome:'Pimenta Reino', unid:'g', min:100},
-    {cat:'📦 ESTOQUE SECO', nome:'Sal', unid:'kg', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Caldo Frango', unid:'kg', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Óleo Girassol', unid:'unid', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Vinagre', unid:'unid', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Barbecue', unid:'unid', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Mostarda', unid:'unid', min:1},
-    {cat:'📦 ESTOQUE SECO', nome:'Ketchup', unid:'unid', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Trigo (3 unid)', unid:'pote', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Açúcar (2 unid)', unid:'pote', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Croutons', unid:'pote', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Panko (1 unid)', unid:'pote', min:2},
-    {cat:'📦 PRATELEIRA', nome:'Uva Passa', unid:'g', min:500},
-    {cat:'📦 PRATELEIRA', nome:'Xerém Castanha', unid:'g', min:500},
-    {cat:'📦 PRATELEIRA', nome:'Coco Torrado', unid:'pote', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Farofa', unid:'pote', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Mix de Canela', unid:'g', min:500},
-    {cat:'📦 PRATELEIRA', nome:'Gergilim Branco', unid:'g', min:300},
-    {cat:'📦 PRATELEIRA', nome:'Chips Banana', unid:'pote', min:1},
-    {cat:'📦 PRATELEIRA', nome:'Torrada', unid:'pote', min:1},
-    // BALCÃO PROTEÍNAS
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Parme Carne (balcão)', unid:'unid', min:20},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Parme Frango (balcão)', unid:'unid', min:30},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Isca de Carne (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Isca de Frango (balcão)', unid:'unid', min:20},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Paillard (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Carne de Sol (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Camarão Limpo (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Camarão Empanado (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Filé Tilápia (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Filé Salmão (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Isca Salmão (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Burguer (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Medalhão (balcão)', unid:'unid', min:10},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Batata Palito (balcão)', unid:'pote', min:4},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Peito Frango (balcão)', unid:'pote', min:20},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Mussarela (1kg)', unid:'unid', min:2},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Queijo Reino (1kg)', unid:'unid', min:1},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Queijo Manteiga (1kg)', unid:'unid', min:1},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Presunto (1kg)', unid:'unid', min:2},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Queijo Coalho (barra)', unid:'unid', min:1},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Salame (balcão)', unid:'unid', min:1},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Tomate Salada Cortada', unid:'unid', min:2},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Pasta Alho (pote)', unid:'pote', min:1},
-    {cat:'🥩 BALCÃO PROTEÍNAS', nome:'Manteiga (pote)', unid:'pote', min:1},
-    // BALCÃO FOGÃO
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Espinafre (fogão)', unid:'porção', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Cogumelos (fogão)', unid:'pote', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Cebola Caramelizada (fogão)', unid:'pote', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Bacon (fogão)', unid:'pote', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Brócolis Queimado (fogão)', unid:'porção', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Arroz Integral (fogão)', unid:'porção', min:5},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Arroz Arborio (fogão)', unid:'porção', min:10},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Arroz Vermelho (fogão)', unid:'porção', min:10},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Limão Verde (fogão)', unid:'unid', min:4},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Sumo Siciliano', unid:'bisnaga', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Gengibre (fogão)', unid:'unid', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Parmesão (fogão)', unid:'pote', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Bacon Picado', unid:'pote', min:1},
-    {cat:'🔥 BALCÃO FOGÃO', nome:'Coentro (fogão)', unid:'pote', min:1},
-    // BALCÃO ALMOÇO
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Feijão Preto (almoço)', unid:'pote', min:2},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Feijão Verde (almoço)', unid:'pote', min:2},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Molho Escuro (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Brócolis Picado', unid:'porção', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Cebola Caramelizada (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Cogumelos (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Bacon Caramelizado (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Espinafre (almoço)', unid:'porção', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Molho Tomate (almoço)', unid:'pote', min:2},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Molho Queijo (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Caldo Legumes (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Purê de Batata', unid:'pote', min:2},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Parmesão Ralado (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Arroz Branco (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Penne (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Espaguete (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Requeijão (almoço)', unid:'unid', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Frango Desfiado', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Creme de Leite (almoço)', unid:'unid', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Charque', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Coalho Ralado (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Bacon Assado (almoço)', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Ovo', unid:'unid', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Tapioca Ralada', unid:'pote', min:1},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Búfalo Ralado', unid:'pote', min:5},
-    {cat:'🍽️ BALCÃO ALMOÇO', nome:'Coco Ralado (almoço)', unid:'pote', min:1},
-    // BALCÃO PEDIDO (Boqueta)
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Tomate Seco (balcão)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Tomate Confit (balcão)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Pasta Ricota (balcão)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Aiole (balcão)', unid:'bisnaga', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Caesar (balcão)', unid:'bisnaga', min:2},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Molho Coxinha (balcão)', unid:'bisnaga', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Teriaken (balcão)', unid:'bisnaga', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Molho Pesto (balcão)', unid:'bisnaga', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Clorofila (balcão)', unid:'bisnaga', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Tomate Cereja (balcão)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Cebola Pétala', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Barbecue (balcão)', unid:'bisnaga', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Salsa Decoração', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Salsa Picada', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Pasta Abacate (balcão)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Doce de Leite', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Croissant (balcão)', unid:'unid', min:10},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Coxinha Frango Empanada (balcão)', unid:'unid', min:15},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Coxinha Catupiry Empanada (balcão)', unid:'unid', min:15},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Parmesão Ralado (pote guarnição)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Rodelas de Limão', unid:'limão', min:2},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Carne Seca (guarnição)', unid:'g', min:50},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Farofa de Pão (pote)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Salsa Picada (pote)', unid:'pote', min:1},
-    {cat:'🪟 BALCÃO PEDIDO', nome:'Gergilim Branco (pote)', unid:'pote', min:1},
-    // BALCÃO SALADA
-    {cat:'🥗 BALCÃO SALADA', nome:'Tomate Seco (salada)', unid:'pote', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Parmesão Ralado (salada)', unid:'pote', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Molho Caesar (salada)', unid:'bisnaga', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Cebola Picada', unid:'pote', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Tomate Cereja (salada)', unid:'pote', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Caponata (salada)', unid:'pote', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Pasta Ricota (salada)', unid:'pote', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Alface a Vácuo', unid:'unid', min:10},
-    {cat:'🥗 BALCÃO SALADA', nome:'Pão Francês (salada)', unid:'unid', min:10},
-    {cat:'🥗 BALCÃO SALADA', nome:'Pão Brioche (salada)', unid:'unid', min:20},
-    {cat:'🥗 BALCÃO SALADA', nome:'Baguete (salada)', unid:'unid', min:7},
-    {cat:'🥗 BALCÃO SALADA', nome:'Italiano (salada)', unid:'fatia', min:5},
-    {cat:'🥗 BALCÃO SALADA', nome:'Multigrão (salada)', unid:'fatia', min:5},
-    {cat:'🥗 BALCÃO SALADA', nome:'Burguer (salada)', unid:'unid', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'No Dog (salada)', unid:'unid', min:6},
-    {cat:'🥗 BALCÃO SALADA', nome:'Ketchup (salada)', unid:'unid', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'BBQ (salada)', unid:'unid', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Mostarda (salada)', unid:'unid', min:1},
-    {cat:'🥗 BALCÃO SALADA', nome:'Cebola Pétala (salada)', unid:'pote', min:1},
-    // PRATO DO DIA
-    {cat:'🍛 PRATO DO DIA', nome:'Strogonoff', unid:'porção', min:30},
-    {cat:'🍛 PRATO DO DIA', nome:'Batata Palha', unid:'pct', min:1},
-    {cat:'🍛 PRATO DO DIA', nome:'Picadinho', unid:'porção', min:30},
-    {cat:'🍛 PRATO DO DIA', nome:'Farofa (prato do dia)', unid:'pote', min:1},
-    {cat:'🍛 PRATO DO DIA', nome:'Supremo', unid:'porção', min:30},
-    {cat:'🍛 PRATO DO DIA', nome:'Feijoada', unid:'porção', min:30},
-    {cat:'🍛 PRATO DO DIA', nome:'Cebola Roxa', unid:'unid', min:4},
-    {cat:'🍛 PRATO DO DIA', nome:'Pimenta de Cheiro', unid:'unid', min:3},
-    {cat:'🍛 PRATO DO DIA', nome:'Tomate Salada (prato)', unid:'unid', min:5},
-    {cat:'🍛 PRATO DO DIA', nome:'Coentro (prato)', unid:'maço', min:1},
-    {cat:'🍛 PRATO DO DIA', nome:'Pimentão Amarelo', unid:'unid', min:2},
-    {cat:'🍛 PRATO DO DIA', nome:'Couve', unid:'maço', min:1},
-  ],
-
   esg: [
-    // PRODUTOS DE LIMPEZA
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Álcool 70% - 1L', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Bom Ar', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Desinfetante de Uso Geral - Bombona 5L', unid:'bombona'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Detergente Clorado - Bombona 5L', unid:'bombona'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Detergente Neutro Gold - Bombona 5L', unid:'bombona'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Espátula', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Esponja Dupla Face (Multiuso)', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Essência Daslu (Aromatizante)', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Fibra Abrasiva (Lavagem Pesada)', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Limpa Vidros - Bombona 5L', unid:'bombona'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Lustra Móveis 500ml (Destac)', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Luva de Borracha Amarela', unid:'par'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Luva de Borracha Nitrílica Verde', unid:'par'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Pano de Chão', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Perfex - Rolo 300 Toalhas', unid:'rolo'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Refil Mini-Lock (Esponja)', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Saco de Lixo 60L - Fardo 100und', unid:'fardo'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Saco de Lixo 100L - Fardo 50und', unid:'fardo'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Saco de Lixo 300L Reforçado - Fardo 50und', unid:'fardo'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Vassoura de Nylon', unid:'unid'},
-    {cat:'PRODUTOS DE LIMPEZA', nome:'Vassoura de Piaçava', unid:'unid'},
-    // LIMPEZA DE EQUIPAMENTOS
-    {cat:'LIMPEZA DE EQUIPAMENTOS', nome:'Detergente Desincrustante 5L (207)', unid:'bombona'},
-    {cat:'LIMPEZA DE EQUIPAMENTOS', nome:'Detergente p/ Máquina de Louça 5L (277)', unid:'bombona'},
-    {cat:'LIMPEZA DE EQUIPAMENTOS', nome:'Detergente Desengordurante Pré-Lavagem 5L (227)', unid:'bombona'},
-    {cat:'LIMPEZA DE EQUIPAMENTOS', nome:'Secante Máquina de Louça 5L (288)', unid:'bombona'},
-    {cat:'LIMPEZA DE EQUIPAMENTOS', nome:'Detergente Neutro 2L', unid:'unid'},
-    // HIGIENE E PAPEL
-    {cat:'HIGIENE E PAPEL', nome:'Papel Toalha Rolo Colaboradores - Fardo 8 rolos (180)', unid:'fardo'},
-    {cat:'HIGIENE E PAPEL', nome:'Papel Toalha Interfolhado Clientes - Fardo 6pct (184)', unid:'fardo'},
-    {cat:'HIGIENE E PAPEL', nome:'Papel Higiênico Rolo Colaboradores - Caixa 8 rolos (118)', unid:'caixa'},
-    {cat:'HIGIENE E PAPEL', nome:'Sabonete Erva Doce Clientes 5L', unid:'bombona'},
-    {cat:'HIGIENE E PAPEL', nome:'Sabonete Antisséptico Cozinha 600ml', unid:'unid'},
-    {cat:'HIGIENE E PAPEL', nome:'Sabonete Frutal Verde 600ml', unid:'unid'},
+    {cat:'LIMPEZA GERAL', nome:'Detergente Líquido', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Água Sanitária', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Desinfetante', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Multiuso Spray', unid:'frasco'},
+    {cat:'LIMPEZA GERAL', nome:'Álcool 70%', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Álcool Gel', unid:'frasco'},
+    {cat:'LIMPEZA GERAL', nome:'Desincrustante', unid:'frasco'},
+    {cat:'LIMPEZA GERAL', nome:'Limpa Vidros', unid:'frasco'},
+    {cat:'COPA E COZINHA', nome:'Detergente Desincrustante Industrial', unid:'kg'},
+    {cat:'COPA E COZINHA', nome:'Sanitizante para Alimentos', unid:'L'},
+    {cat:'COPA E COZINHA', nome:'Esponja Dupla Face', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Luva Borracha', unid:'par'},
+    {cat:'COPA E COZINHA', nome:'Pano de Prato', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Rodo', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Vassoura', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Balde', unid:'unid'},
+    {cat:'HIGIENE PESSOAL', nome:'Sabonete Líquido', unid:'L'},
+    {cat:'HIGIENE PESSOAL', nome:'Papel Toalha', unid:'fardo'},
+    {cat:'HIGIENE PESSOAL', nome:'Papel Higiênico', unid:'fardo'},
+    {cat:'HIGIENE PESSOAL', nome:'Touca Descartável', unid:'pct'},
+    {cat:'HIGIENE PESSOAL', nome:'Luva Descartável', unid:'caixa'},
+    {cat:'HIGIENE PESSOAL', nome:'Máscara Descartável', unid:'caixa'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Filme PVC', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Papel Alumínio', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Saco de Lixo 100L', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Saco de Lixo 200L', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Saco Zip Lock', unid:'pct'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Embalagem Marmita', unid:'pct'},
   ],
 };
 
@@ -1323,7 +705,6 @@ const SETOR_CFG = {
   prod_doces:    {nome:'Produção Doces e Salgados', icone:'🍰', cor:'#1A3A2A'},
   retirada:      {nome:'Retirada do Dia',           icone:'🛒', cor:'#BF360C'},
   cozinha_quente:{nome:'Cozinha Quente',             icone:'🍳', cor:'#4A148C'},
-  cozinha_recife:{nome:'Cozinha Recife Antigo',      icone:'🏪', cor:'#00695C'},
   bar:           {nome:'Bar / Barista',              icone:'☕', cor:'#1565C0'},
   esg:           {nome:'ESG — Limpeza',              icone:'🧹', cor:'#2E7D32'},
 };
@@ -1347,37 +728,162 @@ function hoje() { return new Date().toLocaleDateString('pt-BR'); }
 function horaAgora() { return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
 
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxuo7W0i7qmN2idHkqvBbOzy-2csdpX6LhHWPqFKgkLSlU-_LMk_jWAud6oA0XVkuQQ/exec';
+const BIN_ID = '6a03b146adc21f119a8f80d1';
+const MASTER_KEY = '$2a$10$XxSWLf8fYZpZgO5mGyATQ.HLXdcHdLJdbILKEHgto8keEgQj7lWXa';
+const BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Master-Key': MASTER_KEY,
+  'X-Bin-Versioning': 'false'
+};
 
-async function lerDados() {
-  try {
-    const r = await fetch(API_URL + '?action=lerTodos');
-    const j = await r.json();
-    const todos = j.requisicoes || [];
-    const h = hoje();
-    const loja = lojaAtual;
-    return todos.filter(x => x.data === h && x.loja === loja);
-  } catch(e) { console.error('lerDados erro:', e); return []; }
-}
+// ═══════════════════════════════════════════════════════════
+// CACHE LOCAL + FILA OFFLINE (funciona mesmo sem internet)
+// ═══════════════════════════════════════════════════════════
+var CACHE_KEY = 'cafe_cache_v1';
+var FILA_KEY = 'cafe_fila_v1';
 
-async function lerTodos() {
+function cacheLer() {
   try {
-    const r = await fetch(API_URL + '?action=lerTodos');
-    const j = await r.json();
-    return j.requisicoes || [];
+    var s = localStorage.getItem(CACHE_KEY);
+    return s ? JSON.parse(s) : [];
   } catch(e) { return []; }
 }
 
-async function salvarReq(req) {
+function cacheSalvar(lista) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(lista)); } catch(e) {}
+}
+
+function filaLer() {
   try {
-    await fetch(API_URL + '?action=salvar&dados=' + encodeURIComponent(JSON.stringify(req)));
-  } catch(e) { console.error('salvarReq erro:', e); throw e; }
+    var s = localStorage.getItem(FILA_KEY);
+    return s ? JSON.parse(s) : [];
+  } catch(e) { return []; }
+}
+
+function filaAdicionar(req) {
+  var f = filaLer();
+  f.push(req);
+  try { localStorage.setItem(FILA_KEY, JSON.stringify(f)); } catch(e) {}
+}
+
+function filaLimpar() {
+  try { localStorage.removeItem(FILA_KEY); } catch(e) {}
+}
+
+async function lerDados() {
+  // Lê cache local primeiro, tenta servidor em paralelo
+  var cache = cacheLer();
+  try {
+    var r = await Promise.race([
+      fetch(BIN_URL, {headers: HEADERS}),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    var j = await r.json();
+    var todos = (j.record && j.record.requisicoes) || [];
+    // Mescla com fila offline pendente
+    var fila = filaLer();
+    if(fila.length) todos = todos.concat(fila);
+    cacheSalvar(todos);
+    var h = hoje();
+    var loja = lojaAtual;
+    return todos.filter(function(x){ return x.data === h && x.loja === loja; });
+  } catch(e) {
+    console.warn('lerDados — usando cache local:', e.message);
+    var h = hoje(), loja = lojaAtual;
+    return cache.filter(function(x){ return x.data === h && x.loja === loja; });
+  }
+}
+
+async function lerTodos() {
+  var cache = cacheLer();
+  try {
+    var r = await Promise.race([
+      fetch(BIN_URL, {headers: HEADERS}),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    var j = await r.json();
+    var todos = (j.record && j.record.requisicoes) || [];
+    var fila = filaLer();
+    if(fila.length) todos = todos.concat(fila);
+    cacheSalvar(todos);
+    return todos;
+  } catch(e) {
+    console.warn('lerTodos — usando cache local:', e.message);
+    return cache;
+  }
+}
+
+async function salvarDados(lista_dia) {
+  // Atualiza cache local IMEDIATAMENTE
+  var cache = cacheLer();
+  var h = hoje();
+  var loja = lojaAtual;
+  var outros = cache.filter(function(x){ return !(x.data === h && x.loja === loja); });
+  var novo = outros.concat(lista_dia);
+  cacheSalvar(novo);
+
+  // Tenta servidor com timeout curto
+  try {
+    await Promise.race([
+      fetch(BIN_URL, {
+        method: 'PUT',
+        headers: HEADERS,
+        body: JSON.stringify({requisicoes: novo})
+      }),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+    ]);
+    filaLimpar(); // sincronizou OK
+  } catch(e) {
+    console.warn('salvarDados — servidor falhou, dados ficam no cache:', e.message);
+    // Marca os itens que ainda não sincronizaram
+    lista_dia.forEach(function(it){
+      if(it.id && !filaLer().some(function(f){ return f.id === it.id; })){
+        filaAdicionar(it);
+      }
+    });
+  }
+}
+
+async function salvarReq(req) {
+  // Salva direto no cache local pra aparecer NA HORA
+  var cache = cacheLer();
+  cache.push(req);
+  cacheSalvar(cache);
+  filaAdicionar(req);
+
+  // Tenta sincronizar com servidor em background (não bloqueia)
+  try {
+    var todos = await lerTodos();
+    if(!todos.some(function(r){ return r.id === req.id; })) todos.push(req);
+    await Promise.race([
+      fetch(BIN_URL, {
+        method: 'PUT',
+        headers: HEADERS,
+        body: JSON.stringify({requisicoes: todos})
+      }),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+    ]);
+    filaLimpar();
+  } catch(e) {
+    console.warn('salvarReq — ficou no cache, sincroniza depois:', e.message);
+    // Não joga erro pra cima — o dado já foi salvo no cache local
+  }
 }
 
 async function atualizarReq(id, updates) {
   try {
-    id = String(id);
-    await fetch(API_URL + '?action=atualizar&id=' + encodeURIComponent(id) + '&updates=' + encodeURIComponent(JSON.stringify(updates)));
+    id = Number(id);
+    const todos = await lerTodos();
+    const idx = todos.findIndex(function(r) { return Number(r.id) === id; });
+    if(idx >= 0) {
+      Object.assign(todos[idx], updates);
+      await fetch(BIN_URL, {
+        method: 'PUT',
+        headers: HEADERS,
+        body: JSON.stringify({requisicoes: todos})
+      });
+    }
   } catch(e) {
     console.error('Erro ao atualizar:', e);
     throw e;
@@ -1393,7 +899,14 @@ function abrirTela(id) {
   if(id === 'tela-home') { atualizarHome(); stopPolling(); pedidoEmEdicao = null; }
   if(id === 'tela-estoquista') { 
     pedidoEmEdicao = null;
+    // Garante que o label da loja está coerente com lojaAtual
+    var lbl = document.getElementById('estoq-loja-label');
+    if(lbl) lbl.textContent = lojaAtual === 'JAQUEIRA' ? 'Jaqueira' : 'Recife';
     carregarPedidos(true);
+  }
+  // Se entrou na tela de transferência, sempre remontar destinos (caso loja tenha mudado)
+  if(id === 'tela-transferencia') {
+    montarDestinosTransf();
   }
 }
 
@@ -1844,16 +1357,279 @@ async function confirmarEntrega(reqId) {
   }
 }
 
+
+// ═══════════════════════════════════════════════════
+// MOVIMENTAÇÕES — Entrada, Transferência, Clube 17
+// ═══════════════════════════════════════════════════
+
+// Consolida todos os itens de todos os setores numa lista única
+var TODOS_ITENS_MOV = [];
+(function(){
+  var vistos = {};
+  Object.keys(ITENS).forEach(function(setor){
+    ITENS[setor].forEach(function(item){
+      var chave = item.nome.toUpperCase();
+      if(!vistos[chave]){
+        vistos[chave] = true;
+        TODOS_ITENS_MOV.push({cat: item.cat, nome: item.nome, unid: item.unid || 'unid'});
+      }
+    });
+  });
+  TODOS_ITENS_MOV.sort(function(a,b){
+    var c = (a.cat||'').localeCompare(b.cat||'');
+    return c !== 0 ? c : a.nome.localeCompare(b.nome);
+  });
+})();
+
+// Estado em memória: {entrada: {nome: qtd}, transferencia: {...}, clube17: {...}}
+var movDados = {entrada:{}, transferencia:{}, clube17:{}};
+var transfDestino = ''; // 'RECIFE', 'JAQUEIRA' ou 'CLUBE_17' (escolhido pelo usuário)
+
+function setTransfDestino(dest){
+  transfDestino = dest;
+  // Atualiza visual dos botões
+  document.querySelectorAll('#transf-destinos button').forEach(function(b){
+    if(b.dataset.dest === dest){
+      b.style.background = '#6A1B9A'; b.style.color = '#fff'; b.style.borderColor = '#6A1B9A';
+      b.style.borderStyle = 'solid'; b.style.boxShadow = '0 2px 8px rgba(106,27,154,.4)';
+      b.innerHTML = '✅ ' + b.innerHTML.replace('👉 ', '').replace('✅ ', '');
+    } else {
+      b.style.background = '#F3E5F5'; b.style.color = '#6A1B9A'; b.style.borderColor = '#6A1B9A';
+      b.style.borderStyle = 'dashed'; b.style.boxShadow = '';
+      b.innerHTML = '👉 ' + b.innerHTML.replace('✅ ', '').replace('👉 ', '');
+    }
+  });
+  var sub = document.getElementById('transf-sub');
+  var origem = lojaAtual === 'JAQUEIRA' ? 'Jaqueira' : 'Recife Antigo';
+  var nomeDest = dest === 'JAQUEIRA' ? 'Jaqueira' : dest === 'RECIFE' ? 'Recife Antigo' : dest === 'CLUBE_17' ? 'Clube 17' : '...';
+  sub.textContent = origem + ' → ' + nomeDest;
+}
+
+function montarDestinosTransf(){
+  // Mostra só os destinos diferentes da loja atual
+  var destinos = [];
+  if(lojaAtual === 'JAQUEIRA'){
+    destinos = [
+      {id:'RECIFE', label:'🏪 Recife Antigo'},
+      {id:'CLUBE_17', label:'🏢 Clube 17'}
+    ];
+  } else {
+    destinos = [
+      {id:'JAQUEIRA', label:'🏠 Jaqueira'},
+      {id:'CLUBE_17', label:'🏢 Clube 17'}
+    ];
+  }
+  var wrap = document.getElementById('transf-destinos');
+  wrap.innerHTML = destinos.map(function(d){
+    return '<button data-dest="' + d.id + '" onclick="setTransfDestino(\'' + d.id + '\')" ' +
+      'style="flex:1;padding:14px 6px;border:2px dashed #6A1B9A;border-radius:10px;background:#F3E5F5;color:#6A1B9A;font-size:13px;font-weight:700;cursor:pointer">' +
+      '👉 ' + d.label + '</button>';
+  }).join('');
+  transfDestino = '';
+  document.getElementById('transf-sub').textContent = 'Selecione o destino';
+}
+
+function abrirMovimento(tipo){
+  if(!movDados[tipo]) movDados[tipo] = {};
+  var buscaId = tipo === 'transferencia' ? 'transf-busca' : (tipo + '-busca');
+  var b = document.getElementById(buscaId);
+  if(b) b.value = '';
+  if(tipo === 'transferencia') montarDestinosTransf();
+  renderMovimento(tipo);
+  abrirTela('tela-' + tipo);
+}
+
+function renderMovimento(tipo){
+  var buscaId = tipo === 'transferencia' ? 'transf-busca' : (tipo + '-busca');
+  var listaId = tipo + '-lista';
+  var busca = (document.getElementById(buscaId)?.value || '').toLowerCase().trim();
+  var dados = movDados[tipo] || {};
+
+  var filtrados = TODOS_ITENS_MOV.filter(function(it){
+    return !busca || it.nome.toLowerCase().includes(busca) || (it.cat||'').toLowerCase().includes(busca);
+  });
+
+  var htmlOut = '';
+  var catAtual = '';
+  filtrados.forEach(function(it){
+    if(it.cat !== catAtual){
+      catAtual = it.cat;
+      htmlOut += '<div style="font-size:11px;font-weight:700;color:var(--texto2);text-transform:uppercase;letter-spacing:.06em;padding:10px 14px 4px;background:#f5f7fa">' + (catAtual || '') + '</div>';
+    }
+    var qtd = dados[it.nome] || 0;
+    var idSafe = sanitize(it.nome) + '_' + tipo;
+    htmlOut += '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--borda);background:#fff">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--texto);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + it.nome + '</div>' +
+        '<div style="font-size:11px;color:var(--texto2)">' + it.unid + '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">' +
+        '<button onclick="alterarMovQtd(\'' + tipo + '\',\'' + it.nome.replace(/\'/g,"\\'") + '\',-1)" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--borda);background:#fff;font-size:18px;font-weight:700;cursor:pointer">−</button>' +
+        '<input type="number" inputmode="numeric" id="mov_' + idSafe + '" value="' + qtd + '" min="0" onchange="setMovQtd(\'' + tipo + '\',\'' + it.nome.replace(/\'/g,"\\'") + '\',this.value)" style="width:48px;text-align:center;padding:6px 4px;border:1.5px solid var(--borda);border-radius:8px;font-size:14px;font-weight:700">' +
+        '<button onclick="alterarMovQtd(\'' + tipo + '\',\'' + it.nome.replace(/\'/g,"\\'") + '\',1)" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--borda);background:#fff;font-size:18px;font-weight:700;cursor:pointer">+</button>' +
+      '</div>' +
+    '</div>';
+  });
+
+  document.getElementById(listaId).innerHTML = htmlOut || '<div style="padding:40px 20px;text-align:center;color:var(--texto2);font-size:14px">Nenhum item encontrado</div>';
+
+  atualizarResumoMov(tipo);
+}
+
+function alterarMovQtd(tipo, nome, delta){
+  var atual = movDados[tipo][nome] || 0;
+  var novo = Math.max(0, atual + delta);
+  if(novo === 0) delete movDados[tipo][nome];
+  else movDados[tipo][nome] = novo;
+  var idSafe = sanitize(nome) + '_' + tipo;
+  var inp = document.getElementById('mov_' + idSafe);
+  if(inp) inp.value = novo;
+  atualizarResumoMov(tipo);
+}
+
+function setMovQtd(tipo, nome, val){
+  var n = parseInt(val) || 0;
+  if(n <= 0) delete movDados[tipo][nome];
+  else movDados[tipo][nome] = n;
+  atualizarResumoMov(tipo);
+}
+
+function atualizarResumoMov(tipo){
+  var dados = movDados[tipo] || {};
+  var nItens = Object.keys(dados).length;
+  var elCount = document.getElementById(tipo + '-count');
+  if(elCount) elCount.textContent = nItens + ' iten' + (nItens === 1 ? '' : 's');
+  // Mostra/esconde a barra flutuante (e libera o botão atrás dela)
+  var bar = document.getElementById(tipo + '-resumo');
+  if(bar) bar.classList.toggle('show', nItens > 0);
+}
+
+async function confirmarMovimento(tipo){
+  var dados = movDados[tipo] || {};
+  var nomes = Object.keys(dados);
+  if(nomes.length === 0){
+    alert('Adicione pelo menos 1 item antes de confirmar.');
+    return;
+  }
+
+  var TIPO_LABEL = {entrada:'ENTRADA', transferencia:'TRANSFERENCIA', clube17:'SAIDA_CLUBE17'};
+  var TIPO_NOME = {entrada:'Entrada de mercadoria', transferencia:'Transferência', clube17:'Saída Clube 17'};
+  var TIPO_ICONE = {entrada:'📥', transferencia:'🔄', clube17:'🏢'};
+
+  var origem = lojaAtual;
+  var destino = '';
+  var nomeMov = TIPO_NOME[tipo];
+  if(tipo === 'transferencia'){
+    if(!transfDestino){
+      alert('⚠️ ATENÇÃO!\n\nVocê precisa escolher o DESTINO da transferência ANTES de confirmar.\n\nLá no topo da tela, toque em UM dos botões:\n→ 🏪 Recife Antigo\n→ 🏢 Clube 17');
+      // Destacar visualmente os botões de destino piscando
+      try {
+        var btns = document.querySelectorAll('#transf-destinos button');
+        btns.forEach(function(b){
+          b.style.transition = 'all .3s';
+          b.style.boxShadow = '0 0 0 4px #ff0';
+          setTimeout(function(){ b.style.boxShadow = ''; }, 2000);
+        });
+      } catch(eAviso){}
+      return;
+    }
+    destino = transfDestino;
+    var destNm = destino === 'JAQUEIRA' ? 'Jaqueira' : destino === 'RECIFE' ? 'Recife' : 'Clube 17';
+    nomeMov = 'Transferência → ' + destNm;
+  } else if(tipo === 'clube17'){
+    destino = 'CLUBE_17';
+  }
+
+  var movimento = {
+    id: Date.now() + Math.floor(Math.random()*1000),
+    tipo_registro: 'MOVIMENTO',
+    tipo_mov: TIPO_LABEL[tipo],
+    loja: lojaAtual,
+    origem: origem,
+    destino: destino,
+    data: hoje(),
+    hora: horaAgora(),
+    status: 'confirmado',
+    // Campos pra aparecer na lista igual um pedido normal:
+    setorNome: nomeMov,
+    setorIcone: TIPO_ICONE[tipo],
+    itens: nomes.map(function(nm){
+      var it = TODOS_ITENS_MOV.find(function(x){ return x.nome === nm; });
+      var q = dados[nm];
+      return {
+        nome: nm,
+        qtd: q,
+        qtd_pedida: q,
+        qtd_entregue: q,
+        status: 'ok',
+        unid: it ? it.unid : 'unid',
+        cat: it ? it.cat : ''
+      };
+    })
+  };
+
+  console.log('[confirmarMovimento]', tipo, 'iniciando', movimento);
+
+  // 1. SALVA NO CACHE LOCAL JÁ (instantâneo) — antes de qualquer await
+  try {
+    var cache = cacheLer();
+    cache.push(movimento);
+    cacheSalvar(cache);
+    filaAdicionar(movimento);
+    console.log('[confirmarMovimento] salvou no cache local OK');
+  } catch(eCache){
+    console.error('[confirmarMovimento] erro no cache:', eCache);
+    alert('❌ Erro ao salvar no celular: ' + eCache.message);
+    return;
+  }
+
+  // 2. LIMPA ESTADO
+  movDados[tipo] = {};
+
+  // 3. MOSTRA MENSAGEM DE SUCESSO IMEDIATAMENTE (não espera servidor)
+  var total = movimento.itens.reduce(function(s,i){return s+i.qtd;}, 0);
+  alert('✅ ' + TIPO_NOME[tipo] + ' registrada!\n\n' + nomes.length + ' iten(s) · total ' + total + ' unidade(s)' + (destino ? '\nDestino: ' + destino.replace('_',' ') : ''));
+
+  // 4. VOLTA PRA TELA DO ESTOQUISTA
+  abrirTela('tela-estoquista');
+
+  // 5. TENTA SINCRONIZAR EM SEGUNDO PLANO (sem await — não trava nada)
+  (async function(){
+    try {
+      var todos = await lerTodos();
+      if(!todos.some(function(r){ return r.id === movimento.id; })) todos.push(movimento);
+      await Promise.race([
+        fetch(BIN_URL, {method:'PUT', headers:HEADERS, body: JSON.stringify({requisicoes: todos})}),
+        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout sync')); }, 8000); })
+      ]);
+      filaLimpar();
+      console.log('[confirmarMovimento] sincronizou com servidor OK');
+    } catch(eSync){
+      console.warn('[confirmarMovimento] não sincronizou (cache mantém os dados):', eSync.message);
+    }
+  })();
+}
+
 async function exportarCSVDia() {
   const lista = await lerDados();
-  const confirmadas = lista.filter(r => r.status === 'confirmado');
-  if(!confirmadas.length) { alert('Nenhuma requisição confirmada hoje.'); return; }
+  const confirmadas = lista.filter(r => r.status === 'confirmado' && r.tipo_registro !== 'MOVIMENTO');
+  const movimentos = lista.filter(r => r.tipo_registro === 'MOVIMENTO');
+  if(!confirmadas.length && !movimentos.length) { alert('Nenhum registro confirmado hoje.'); return; }
 
-  let csv = 'LOJA,DATA,HORA,SETOR,ITEM,QTD_PEDIDA,QTD_ENTREGUE,STATUS,TIPO\n';
+  let csv = 'LOJA,DATA,HORA,ORIGEM,DESTINO,SETOR,ITEM,UNIDADE,QTD_PEDIDA,QTD_ENTREGUE,STATUS,TIPO\n';
+
+  // Requisições normais (SAIDA pela cozinha/setor)
   confirmadas.forEach(req => {
     req.itens.forEach(it => {
       const st = it.status==='falta'?'SEM_ESTOQUE':it.status==='parcial'?'FALTA_PARCIAL':'OK';
-      csv += `${req.loja},${req.data},${req.hora},"${req.setorNome}","${it.nome}",${it.qtd_pedida},${it.qtd_entregue},${st},SAIDA\n`;
+      csv += `${req.loja},${req.data},${req.hora},${req.loja},${req.loja},"${req.setorNome}","${it.nome}","${it.unid||''}",${it.qtd_pedida},${it.qtd_entregue},${st},SAIDA_REQUISICAO\n`;
+    });
+  });
+
+  // Movimentos (Entrada, Transferência, Saída Clube 17)
+  movimentos.forEach(m => {
+    m.itens.forEach(it => {
+      csv += `${m.loja},${m.data},${m.hora},${m.origem||''},${m.destino||''},"MOVIMENTO","${it.nome}","${it.unid||''}",${it.qtd},${it.qtd},OK,${m.tipo_mov}\n`;
     });
   });
 
@@ -1872,7 +1648,7 @@ async function exportarCSVDia() {
 async function atualizarHome() {
   carregarHistorico();
   const lista = await lerDados();
-  const pendentes = lista.filter(r=>r.status==='pendente');
+  const pendentes = lista.filter(r=>r.status==='pendente' && r.tipo_registro !== 'MOVIMENTO');
 
   Object.keys(SETOR_CFG).forEach(function(s) {
     var n = lista.filter(function(r){return r.setor===s;}).length;
@@ -2004,172 +1780,6 @@ async function exportarCSVFaltas() {
   const a = document.createElement('a');
   a.href = url;
   a.download = `faltas_${lojaAtual}_${hoje().replace(/\//g,'-')}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ═══════════════════════════════════════════════════
-// MOVIMENTAÇÕES — Entrada, Transferência, Clube 17
-// ═══════════════════════════════════════════════════
-
-// Todos os itens consolidados para movimentação
-const TODOS_ITENS_MOV = [];
-Object.keys(ITENS).forEach(function(setor) {
-  ITENS[setor].forEach(function(item) {
-    // Evita duplicatas
-    if(!TODOS_ITENS_MOV.find(function(x){ return x.nome === item.nome; })) {
-      TODOS_ITENS_MOV.push({cat: item.cat, nome: item.nome, unid: item.unid || 'unid'});
-    }
-  });
-});
-// Ordena por categoria
-TODOS_ITENS_MOV.sort(function(a,b){ return a.cat.localeCompare(b.cat) || a.nome.localeCompare(b.nome); });
-
-var movDados = {}; // {tipo: {nome: qtd}}
-var transfDir = 'JAQ_REC';
-
-function setTransfDir(dir) {
-  transfDir = dir;
-  var btnJR = document.getElementById('btn-jaq-rec');
-  var btnRJ = document.getElementById('btn-rec-jaq');
-  if(dir === 'JAQ_REC') {
-    btnJR.style.background = 'var(--verde)'; btnJR.style.color = '#fff'; btnJR.style.borderColor = 'var(--verde-c)';
-    btnRJ.style.background = '#fff'; btnRJ.style.color = 'var(--texto2)'; btnRJ.style.borderColor = 'var(--borda)';
-    document.getElementById('transf-sub').textContent = 'Jaqueira → Recife Antigo';
-  } else {
-    btnRJ.style.background = '#6A1B9A'; btnRJ.style.color = '#fff'; btnRJ.style.borderColor = '#6A1B9A';
-    btnJR.style.background = '#fff'; btnJR.style.color = 'var(--texto2)'; btnJR.style.borderColor = 'var(--borda)';
-    document.getElementById('transf-sub').textContent = 'Recife Antigo → Jaqueira';
-  }
-}
-
-function abrirMovimento(tipo) {
-  if(!movDados[tipo]) movDados[tipo] = {};
-  var ids = {entrada:'tela-entrada', transferencia:'tela-transferencia', clube17:'tela-clube17'};
-  var buscas = {entrada:'entrada-busca', transferencia:'transf-busca', clube17:'clube17-busca'};
-  document.getElementById(buscas[tipo]).value = '';
-  renderMovimento(tipo);
-  abrirTela(ids[tipo]);
-}
-
-function renderMovimento(tipo) {
-  var busca = '';
-  var listaId = '', countId = '', resumoId = '';
-  if(tipo==='entrada')       { busca=document.getElementById('entrada-busca').value.toLowerCase(); listaId='entrada-lista'; countId='entrada-count'; resumoId='entrada-resumo'; }
-  if(tipo==='transferencia') { busca=document.getElementById('transf-busca').value.toLowerCase(); listaId='transf-lista'; countId='transf-count'; resumoId='transf-resumo'; }
-  if(tipo==='clube17')       { busca=document.getElementById('clube17-busca').value.toLowerCase(); listaId='clube17-lista'; countId='clube17-count'; resumoId='clube17-resumo'; }
-
-  var dados = movDados[tipo] || {};
-  var html = '';
-  var catAnt = null;
-  var count = 0;
-
-  TODOS_ITENS_MOV.forEach(function(item) {
-    if(busca && item.nome.toLowerCase().indexOf(busca) < 0) return;
-    if(item.cat !== catAnt) {
-      catAnt = item.cat;
-      html += '<div class="cat-sep">' + item.cat + '</div>';
-    }
-    var qtd = dados[item.nome] || 0;
-    var temValor = qtd > 0;
-    html += '<div class="item-row' + (temValor?' tem-qtd':'') + '">';
-    html += '<div class="item-info"><div class="item-nome">' + item.nome + '</div>';
-    html += '<div class="item-unid">' + item.unid + '</div></div>';
-    html += '<input class="mov-qtd-inp' + (temValor?' tem-valor':'') + '" type="number" inputmode="numeric"';
-    html += ' value="' + (qtd||'') + '" placeholder="0" min="0" autocomplete="off"';
-    var nomeEsc = item.nome.replace(/"/g,'&quot;');
-    html += ' oninput="setMovQtd(\"' + tipo + '\",\"' + nomeEsc + '\",this.value)">';
-    html += '</div>';
-    count++;
-  });
-
-  if(!html) html = '<div class="empty-state"><div class="ei">🔍</div>Nenhum item encontrado</div>';
-  document.getElementById(listaId).innerHTML = html;
-
-  var total = Object.keys(dados).filter(function(k){ return dados[k] > 0; }).length;
-  document.getElementById(countId).textContent = total + (total===1?' item':' itens');
-  document.getElementById(resumoId).classList.toggle('show', total > 0);
-}
-
-function setMovQtd(tipo, nome, val) {
-  if(!movDados[tipo]) movDados[tipo] = {};
-  var v = parseInt(val) || 0;
-  if(v <= 0) delete movDados[tipo][nome];
-  else movDados[tipo][nome] = v;
-}
-
-async function confirmarMovimento(tipo) {
-  var dados = movDados[tipo] || {};
-  var itens = Object.entries(dados).filter(function(e){ return e[1] > 0; });
-  if(!itens.length) { alert('Adicione pelo menos 1 item antes de confirmar.'); return; }
-
-  mostrarLoading('Registrando movimentação...');
-
-  var tipoCSV = tipo==='entrada'?'ENTRADA':tipo==='transferencia'?'TRANSFERENCIA':'SAIDA_CLUBE17';
-  var direcao = tipo==='transferencia' ? transfDir : '';
-
-  var mov = {
-    id: Date.now(),
-    loja: lojaAtual,
-    tipo: tipoCSV,
-    direcao: direcao,
-    data: hoje(),
-    hora: horaAgora(),
-    status: 'confirmado',
-    itens: itens.map(function(e) {
-      return {nome: e[0], qtd_pedida: e[1], qtd_entregue: e[1], status: 'ok'};
-    })
-  };
-
-  await salvarReq(mov);
-  movDados[tipo] = {}; // limpa após confirmar
-  esconderLoading();
-
-  // Exporta CSV imediato
-  exportarCSVMovimento(mov);
-
-  // Volta para estoquista
-  abrirTela('tela-estoquista');
-  alert('✅ ' + itens.length + ' itens registrados com sucesso!');
-}
-
-function exportarCSVMovimento(mov) {
-  var csv = 'LOJA,DATA,HORA,TIPO,DIRECAO,ITEM,QUANTIDADE\n';
-  mov.itens.forEach(function(it) {
-    csv += mov.loja + ',' + mov.data + ',' + mov.hora + ',' + mov.tipo + ',' + (mov.direcao||'-') + ',"' + it.nome + '",' + it.qtd_entregue + '\n';
-  });
-  var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  var nomeTipo = mov.tipo==='ENTRADA'?'entrada':mov.tipo==='TRANSFERENCIA'?'transferencia':'clube17';
-  a.download = nomeTipo + '_' + mov.loja + '_' + mov.data.replace(/\//g,'-') + '_' + mov.hora.replace(':','-') + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// Atualiza exportarCSVDia para incluir todos os tipos
-async function exportarCSVDia() {
-  var todos = await lerTodos();
-  var hoje_str = hoje();
-  var doDia = todos.filter(function(r){ return r.data === hoje_str && r.loja === lojaAtual; });
-  if(!doDia.length) { alert('Nenhum registro hoje ainda.'); return; }
-
-  var csv = 'LOJA,DATA,HORA,TIPO,SETOR_OU_DIRECAO,ITEM,QTD_PEDIDA,QTD_ENTREGUE,STATUS\n';
-  doDia.forEach(function(reg) {
-    reg.itens.forEach(function(it) {
-      var tipo = reg.tipo || 'SAIDA_REQUISICAO';
-      var setor = reg.setorNome || reg.direcao || '-';
-      var st = it.status==='falta'?'SEM_ESTOQUE':it.status==='parcial'?'FALTA_PARCIAL':'OK';
-      csv += reg.loja+','+reg.data+','+reg.hora+','+tipo+',"'+setor+'","'+it.nome+'",'+it.qtd_pedida+','+it.qtd_entregue+','+st+'\n';
-    });
-  });
-
-  var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'movimentacoes_' + lojaAtual + '_' + hoje_str.replace(/\//g,'-') + '.csv';
   a.click();
   URL.revokeObjectURL(url);
 }

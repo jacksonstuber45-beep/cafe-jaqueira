@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Café Recife Antigo — Requisições v1778636226</title>
+<title>Café Recife Antigo — Requisições v1778636227</title>
 <style>
 :root{
   --verde:#1A3A2A;--verde-m:#2D6A4F;--verde-c:#40916C;--verde-bg:#D8F3DC;
@@ -953,21 +953,34 @@ async function salvarReq(req) {
 }
 
 async function atualizarReq(id, updates) {
+  id = Number(id);
+
+  // 1) ATUALIZA O CACHE LOCAL PRIMEIRO (garante que confirmação não se perde)
+  var cache = cacheLer();
+  var idxCache = cache.findIndex(function(r){ return Number(r.id) === id; });
+  if(idxCache >= 0) {
+    Object.assign(cache[idxCache], updates);
+    cacheSalvar(cache);
+  }
+
+  // 2) TENTA SINCRONIZAR COM O SERVIDOR (sem bloquear/quebrar se falhar)
   try {
-    id = Number(id);
     const todos = await lerTodos();
     const idx = todos.findIndex(function(r) { return Number(r.id) === id; });
     if(idx >= 0) {
       Object.assign(todos[idx], updates);
-      await fetch(BIN_URL, {
-        method: 'PUT',
-        headers: HEADERS,
-        body: JSON.stringify({requisicoes: todos})
-      });
+      await Promise.race([
+        fetch(BIN_URL, {
+          method: 'PUT',
+          headers: HEADERS,
+          body: JSON.stringify({requisicoes: todos})
+        }),
+        new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+      ]);
     }
   } catch(e) {
-    console.error('Erro ao atualizar:', e);
-    throw e;
+    // Não relança — confirmação já está salva no cache local
+    console.warn('atualizarReq — servidor falhou, cache mantém os dados:', e.message);
   }
 }
 

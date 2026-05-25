@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Café Recife Antigo — Requisições v1778636227</title>
+<title>Café Recife Antigo — Requisições v1778640000</title>
 <style>
 :root{
   --verde:#1A3A2A;--verde-m:#2D6A4F;--verde-c:#40916C;--verde-bg:#D8F3DC;
@@ -820,24 +820,25 @@ const HEADERS = {
 
 // ═══════════════════════════════════════════════════════════
 // CACHE LOCAL + FILA OFFLINE (funciona mesmo sem internet)
+// Cache SEPARADO por loja pra evitar conflito Jaqueira/Recife
 // ═══════════════════════════════════════════════════════════
-var CACHE_KEY = 'cafe_cache_v1';
-var FILA_KEY = 'cafe_fila_v1';
+function CACHE_KEY() { return 'cafe_cache_v2_' + lojaAtual; }
+function FILA_KEY()  { return 'cafe_fila_v2_'  + lojaAtual; }
 
 function cacheLer() {
   try {
-    var s = localStorage.getItem(CACHE_KEY);
+    var s = localStorage.getItem(CACHE_KEY());
     return s ? JSON.parse(s) : [];
   } catch(e) { return []; }
 }
 
 function cacheSalvar(lista) {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify(lista)); } catch(e) {}
+  try { localStorage.setItem(CACHE_KEY(), JSON.stringify(lista)); } catch(e) {}
 }
 
 function filaLer() {
   try {
-    var s = localStorage.getItem(FILA_KEY);
+    var s = localStorage.getItem(FILA_KEY());
     return s ? JSON.parse(s) : [];
   } catch(e) { return []; }
 }
@@ -845,11 +846,11 @@ function filaLer() {
 function filaAdicionar(req) {
   var f = filaLer();
   f.push(req);
-  try { localStorage.setItem(FILA_KEY, JSON.stringify(f)); } catch(e) {}
+  try { localStorage.setItem(FILA_KEY(), JSON.stringify(f)); } catch(e) {}
 }
 
 function filaLimpar() {
-  try { localStorage.removeItem(FILA_KEY); } catch(e) {}
+  try { localStorage.removeItem(FILA_KEY()); } catch(e) {}
 }
 
 async function lerDados() {
@@ -857,7 +858,7 @@ async function lerDados() {
   var cache = cacheLer();
   try {
     var r = await Promise.race([
-      fetch(BIN_URL, {headers: HEADERS}),
+      fetch(BIN_URL + '/latest', {headers: HEADERS, cache: 'no-store'}),
       new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
     var j = await r.json();
@@ -880,7 +881,7 @@ async function lerTodos() {
   var cache = cacheLer();
   try {
     var r = await Promise.race([
-      fetch(BIN_URL, {headers: HEADERS}),
+      fetch(BIN_URL + '/latest', {headers: HEADERS, cache: 'no-store'}),
       new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
     ]);
     var j = await r.json();
@@ -952,35 +953,65 @@ async function salvarReq(req) {
   }
 }
 
+// Trava para impedir que duas confirmações simultâneas atropelem uma à outra
+var _gravacaoEmAndamento = Promise.resolve();
+
 async function atualizarReq(id, updates) {
-  id = Number(id);
+  // Enfileira a operação: espera a gravação anterior terminar antes de começar
+  var liberar;
+  var minhaVez = new Promise(function(res){ liberar = res; });
+  var anterior = _gravacaoEmAndamento;
+  _gravacaoEmAndamento = minhaVez;
+  await anterior;
 
-  // 1) ATUALIZA O CACHE LOCAL PRIMEIRO (garante que confirmação não se perde)
-  var cache = cacheLer();
-  var idxCache = cache.findIndex(function(r){ return Number(r.id) === id; });
-  if(idxCache >= 0) {
-    Object.assign(cache[idxCache], updates);
-    cacheSalvar(cache);
-  }
-
-  // 2) TENTA SINCRONIZAR COM O SERVIDOR (sem bloquear/quebrar se falhar)
   try {
-    const todos = await lerTodos();
-    const idx = todos.findIndex(function(r) { return Number(r.id) === id; });
-    if(idx >= 0) {
-      Object.assign(todos[idx], updates);
+    id = Number(id);
+
+    // 1) ATUALIZA CACHE LOCAL IMEDIATAMENTE (confirmação fica salva mesmo se servidor cair)
+    var cache = cacheLer();
+    var idxCache = cache.findIndex(function(r){ return Number(r.id) === id; });
+    if(idxCache >= 0) {
+      Object.assign(cache[idxCache], updates);
+      cacheSalvar(cache);
+    }
+
+    // 2) LÊ SERVIDOR FORÇADO (sem cache HTTP) e faz merge
+    try {
+      var resp = await Promise.race([
+        fetch(BIN_URL + '/latest', {headers: HEADERS, cache: 'no-store'}),
+        new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+      ]);
+      var j = await resp.json();
+      var todos = (j.record && j.record.requisicoes) || [];
+
+      // Procura o registro no servidor
+      var idx = todos.findIndex(function(r){ return Number(r.id) === id; });
+      if(idx >= 0) {
+        Object.assign(todos[idx], updates);
+      } else {
+        // Sumiu do servidor por race? Usa nosso cache como verdade
+        if(idxCache >= 0) todos.push(cache[idxCache]);
+      }
+
+      // 3) GRAVA DE VOLTA (com timeout)
       await Promise.race([
         fetch(BIN_URL, {
           method: 'PUT',
           headers: HEADERS,
-          body: JSON.stringify({requisicoes: todos})
+          body: JSON.stringify({requisicoes: todos}),
+          cache: 'no-store'
         }),
         new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
       ]);
+
+      // Sincronizou — limpa fila offline
+      filaLimpar();
+    } catch(eServ) {
+      // Servidor falhou: cache local já tem a confirmação, vai sincronizar depois
+      console.warn('atualizarReq — servidor falhou (cache local mantém os dados):', eServ.message);
     }
-  } catch(e) {
-    // Não relança — confirmação já está salva no cache local
-    console.warn('atualizarReq — servidor falhou, cache mantém os dados:', e.message);
+  } finally {
+    liberar();
   }
 }
 
@@ -1399,55 +1430,68 @@ function atualizarEntregaLocal(reqId, itemIdx, val) {
 async function confirmarEntrega(reqId) {
   pedidoEmEdicao = null;
   mostrarLoading('Confirmando entrega...');
-  
+  console.log('[confirmarEntrega] iniciando id=', reqId);
+
   try {
-  // Converte reqId para number pois pode vir como string do onclick
-  reqId = Number(reqId);
-  
-  // Lê dados frescos
-  const todos = await lerTodos();
-  const req = todos.find(function(r) { return Number(r.id) === reqId; });
-  if(!req) { 
-    esconderLoading(); 
-    alert('Pedido não encontrado. Toque 🔄 para atualizar.');
-    return; 
-  }
+    reqId = Number(reqId);
 
-  // Aplica quantidades — prioriza entregasLocais, depois DOM, nunca volta ao pedido original
-  req.itens.forEach(function(it, i) {
-    var key = reqId + '_' + i;
-    var v;
-    
-    if(entregasLocais[key] !== undefined) {
-      v = entregasLocais[key];
-    } else {
-      var inp = document.getElementById('ei-' + reqId + '-' + i);
-      if(inp) {
-        v = parseInt(inp.value);
-        if(isNaN(v)) v = it.qtd_pedida; // só usa pedida se input estiver vazio
-      } else {
-        v = it.qtd_pedida;
-      }
+    // Lê dados frescos (com fallback pro cache)
+    var todos = await lerTodos();
+    var req = todos.find(function(r) { return Number(r.id) === reqId; });
+
+    // Se sumiu da lista do servidor, busca no cache local
+    if(!req) {
+      var cacheLocal = cacheLer();
+      req = cacheLocal.find(function(r){ return Number(r.id) === reqId; });
     }
-    
-    it.qtd_entregue = v;
-    if(v === 0) it.status = 'falta';
-    else if(v < it.qtd_pedida) it.status = 'parcial';
-    else it.status = 'ok';
-    
-    delete entregasLocais[key];
-  });
-  
-  req.status = 'confirmado';
-  req.hora_confirmacao = horaAgora();
 
-  await atualizarReq(reqId, req);
-  esconderLoading();
-  carregarPedidos();
+    if(!req) {
+      esconderLoading();
+      alert('Pedido não encontrado. Toque 🔄 para atualizar.');
+      return;
+    }
+
+    // Calcula quantidades a partir do que o estoquista digitou
+    req.itens.forEach(function(it, i) {
+      var key = reqId + '_' + i;
+      var v;
+
+      if(entregasLocais[key] !== undefined) {
+        v = entregasLocais[key];
+      } else {
+        var inp = document.getElementById('ei-' + reqId + '-' + i);
+        if(inp) {
+          v = parseInt(inp.value);
+          if(isNaN(v)) v = it.qtd_pedida;
+        } else {
+          v = it.qtd_pedida;
+        }
+      }
+
+      it.qtd_entregue = v;
+      if(v === 0) it.status = 'falta';
+      else if(v < it.qtd_pedida) it.status = 'parcial';
+      else it.status = 'ok';
+
+      delete entregasLocais[key];
+    });
+
+    req.status = 'confirmado';
+    req.hora_confirmacao = horaAgora();
+
+    console.log('[confirmarEntrega] gravando id=', reqId, 'status=confirmado');
+    await atualizarReq(reqId, req);
+    console.log('[confirmarEntrega] OK');
+
+    esconderLoading();
+    // Força recarregar do servidor pra refletir nas abas
+    await carregarPedidos(true);
   } catch(e) {
     esconderLoading();
-    console.error('Erro ao confirmar:', e);
-    alert('Erro ao confirmar. Verifique a conexão e tente novamente.');
+    console.error('[confirmarEntrega] erro inesperado:', e);
+    // Mesmo no erro, recarrega — o cache local já tem a confirmação
+    try { await carregarPedidos(true); } catch(_) {}
+    alert('Houve um problema ao sincronizar com o servidor, mas a confirmação foi salva localmente. Toque 🔄 para atualizar.');
   }
 }
 

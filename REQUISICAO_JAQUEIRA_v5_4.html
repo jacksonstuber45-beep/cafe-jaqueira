@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Café Recife Antigo — Requisições v5.4 (Vitrine no Bar, Retirada removida)</title>
+<style>
+:root{
+  --verde:#1A3A2A;--verde-m:#2D6A4F;--verde-c:#40916C;--verde-bg:#D8F3DC;
+  --azul:#1565C0;--azul-bg:#E3F2FD;
+  --roxo:#6A1B9A;--roxo-bg:#F3E5F5;
+  --laranja:#E65100;--laranja-bg:#FFF3E0;
+  --verm:#C62828;--verm-bg:#FFEBEE;
+  --amar:#F57F17;--amar-bg:#FFF9C4;
+  --cinza:#F5F7FA;--borda:#E0E7EF;
+  --texto:#1A2332;--texto2:#6B7A8D;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:var(--texto);min-height:100vh}
+.tela{display:none;min-height:100vh;flex-direction:column}
+.tela.ativa{display:flex;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.hdr{padding:13px 16px 10px;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.hdr-titulo{font-size:16px;font-weight:700}
+.hdr-sub{font-size:11px;opacity:.7}
+.btn-back{background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-icon{background:rgba(255,255,255,.2);border:none;color:#fff;width:34px;height:34px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* HOME */
+.home-hero{background:var(--verde);padding:28px 20px 22px;text-align:center}
+.home-hero h1{font-size:28px;font-weight:800;color:#fff}
+.home-hero h1 span{color:#74C69D}
+.home-hero p{color:rgba(255,255,255,.6);font-size:13px;margin-top:6px}
+.home-data{color:rgba(255,255,255,.45);font-size:11px;margin-top:4px}
+.loja-sel{display:flex;gap:8px;margin-top:14px;justify-content:center}
+.loja-btn{padding:7px 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.loja-btn.ativo{background:#fff;color:var(--verde);border-color:#fff}
+
+.cards-wrap{padding:16px;display:flex;flex-direction:column;gap:10px}
+.div-label{text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--texto2);padding:4px 0}
+.setor-card{border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;border:none;width:100%;text-align:left;box-shadow:0 3px 14px rgba(0,0,0,.12);transition:transform .15s;position:relative;overflow:hidden}
+.setor-card:active{transform:scale(.97)}
+.setor-card::after{content:'›';position:absolute;right:16px;font-size:22px;color:rgba(255,255,255,.5);font-weight:700}
+.s-icon{font-size:32px;flex-shrink:0}
+.s-nome{font-size:16px;font-weight:700;color:#fff}
+.s-desc{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+.s-badge{background:rgba(255,255,255,.2);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;color:#fff;display:inline-block;margin-top:5px}
+.s-badge.alert{background:rgba(255,80,80,.4)}
+.card-prod{background:linear-gradient(135deg,#1A3A2A,#40916C)}
+.card-coz{background:linear-gradient(135deg,#4A148C,#7B1FA2)}
+.card-bar{background:linear-gradient(135deg,#1565C0,#1976D2)}
+.card-bar2{background:linear-gradient(135deg,#00838F,#00ACC1)}
+.card-esg{background:linear-gradient(135deg,#2E7D32,#388E3C)}
+.card-estoq{background:linear-gradient(135deg,#E65100,#FF8F00)}
+
+/* BUSCA */
+.busca-wrap{background:#fff;border-bottom:1px solid var(--borda);padding:10px 14px}
+.busca-wrap input{width:100%;padding:9px 14px;border:1.5px solid var(--borda);border-radius:10px;font-size:14px;outline:none;background:var(--cinza)}
+.busca-wrap input:focus{border-color:var(--verde-c);background:#fff}
+.cat-toolbar{display:flex;gap:6px;margin-top:8px}
+.cat-tb-btn{flex:1;padding:7px;border:1px solid var(--borda);border-radius:8px;background:#fff;color:var(--texto2);font-size:11px;font-weight:600;cursor:pointer}
+.cat-tb-btn:active{background:var(--cinza)}
+
+/* LISTA ITENS */
+.cat-sep{padding:0;font-size:13px;font-weight:700;color:var(--texto);background:#fff;border-bottom:1px solid var(--borda);border-top:1px solid var(--borda);cursor:pointer;display:flex;align-items:center;justify-content:space-between;width:100%;transition:background .15s;text-align:left;font-family:inherit}
+.cat-sep:hover{background:var(--cinza)}
+.cat-sep .cat-titulo{padding:13px 14px;flex:1;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.05em;font-size:11px;color:var(--texto2)}
+.cat-sep .cat-seta{padding:13px 14px;color:var(--texto2);font-size:12px;transition:transform .2s}
+.cat-sep.aberto .cat-seta{transform:rotate(90deg)}
+.cat-sep .cat-badge{background:var(--verde-c);color:#fff;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;margin-right:6px;min-width:18px;text-align:center}
+.cat-sep .cat-count{color:var(--texto2);font-weight:500;font-size:10px;margin-right:4px}
+.cat-grupo{display:none}
+.cat-grupo.aberto{display:block}
+.item-row{background:#fff;border-bottom:1px solid var(--borda);padding:11px 14px;display:flex;align-items:center;gap:10px;transition:border-left .2s}
+.item-row.tem-qtd{border-left:3px solid var(--verde-c)}
+.item-info{flex:1}
+.item-nome{font-size:14px;font-weight:600}
+.item-unid{font-size:11px;color:var(--texto2);margin-top:1px}
+.qtd-ctrl{display:flex;align-items:center;gap:0;border:1.5px solid var(--borda);border-radius:10px;overflow:hidden;flex-shrink:0}
+.q-btn{width:36px;height:36px;border:none;background:var(--cinza);font-size:18px;font-weight:700;cursor:pointer;color:var(--texto2);display:flex;align-items:center;justify-content:center;transition:background .1s}
+.q-btn:active{background:var(--borda)}
+.q-inp{width:44px;height:36px;border:none;border-left:1px solid var(--borda);border-right:1px solid var(--borda);text-align:center;font-size:16px;font-weight:700;color:var(--texto);background:#fff;outline:none}
+.q-inp.ativo{color:var(--verde-c)}
+
+/* BARRA BOTTOM */
+.barra-bot{position:fixed;bottom:0;left:0;right:0;z-index:50}
+.resumo-float{background:var(--verde);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.resumo-float.show{pointer-events:auto}
+.resumo-float.show{transform:translateY(0)}
+.res-txt strong{font-size:16px;display:block}
+.res-txt span{font-size:12px;opacity:.7}
+.btn-ver-res{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-enviar-req{width:100%;padding:17px;border:none;font-size:16px;font-weight:700;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s;position:relative;z-index:60}
+.btn-enviar-req:disabled{opacity:.6}
+
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end}
+.overlay.open{display:flex}
+.modal{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:20px 16px;max-height:85vh;overflow-y:auto}
+.m-handle{width:40px;height:4px;background:var(--borda);border-radius:2px;margin:0 auto 16px}
+.m-titulo{font-size:18px;font-weight:700;margin-bottom:4px}
+.m-sub{font-size:13px;color:var(--texto2);margin-bottom:14px}
+.m-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--borda)}
+.m-item:last-child{border:none}
+.m-item-nome{font-size:14px;font-weight:600;flex:1}
+.m-item-qtd{font-size:20px;font-weight:800;color:var(--verde-c);min-width:36px;text-align:right}
+.m-btns{display:flex;gap:10px;margin-top:16px}
+.btn-cancel{flex:1;padding:13px;border:2px solid var(--borda);border-radius:12px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:var(--texto2)}
+.btn-confirm{flex:2;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.loading-overlay.show{display:flex}
+.spinner{width:40px;height:40px;border:4px solid var(--borda);border-top-color:var(--verde-c);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:14px;color:var(--texto2)}
+
+/* SUCESSO */
+.sucesso-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;gap:14px}
+.suc-icon{font-size:70px}
+.suc-titulo{font-size:23px;font-weight:800}
+.suc-sub{font-size:14px;color:var(--texto2);line-height:1.6}
+.btn-outline{padding:13px 24px;border:2px solid var(--borda);border-radius:12px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:var(--texto)}
+
+/* ALERTAS */
+.alerta-card{margin:8px 12px;border-radius:12px;padding:14px;border-left:4px solid}
+.alerta-falta{background:var(--verm-bg);border-left-color:var(--verm)}
+.alerta-parcial{background:var(--amar-bg);border-left-color:var(--amar)}
+.alerta-ok{background:var(--verde-bg);border-left-color:var(--verde-c)}
+.alerta-titulo{font-size:14px;font-weight:700;margin-bottom:4px}
+.alerta-item{font-size:13px;padding:3px 0;display:flex;justify-content:space-between}
+.alerta-item span{font-weight:700}
+
+/* ESTOQUISTA */
+.estoq-tabs{display:flex;background:#fff;border-bottom:2px solid var(--borda)}
+.estoq-tab{flex:1;padding:10px 4px;font-size:12px;font-weight:600;text-align:center;border:none;background:transparent;cursor:pointer;color:var(--texto2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.estoq-tab.ativo{color:var(--laranja);border-bottom-color:var(--laranja)}
+.pedido-card{background:#fff;margin:8px 12px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);overflow:hidden}
+.ped-hdr{padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.ped-info{display:flex;align-items:center;gap:10px}
+.ped-icon{font-size:24px}
+.ped-nome{font-size:15px;font-weight:700}
+.ped-meta{font-size:11px;color:var(--texto2);margin-top:1px}
+.status-pill{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700}
+.pill-pend{background:var(--amar-bg);color:var(--amar)}
+.pill-conf{background:var(--verde-bg);color:var(--verde)}
+.ped-itens{border-top:1px solid var(--borda);padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.ped-item{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ped-item-nome{font-size:13px;flex:1}
+.ped-pedido{font-size:13px;font-weight:700;color:var(--azul);background:var(--azul-bg);padding:3px 8px;border-radius:6px}
+.seta{color:var(--texto2);font-size:12px}
+.entrega-inp{width:54px;height:33px;border:1.5px solid var(--borda);border-radius:8px;text-align:center;font-size:15px;font-weight:700;outline:none;color:var(--verde-c)}
+.entrega-inp:focus{border-color:var(--verde-c)}
+.entrega-inp.falta{border-color:var(--verm);color:var(--verm)}
+.falta-label{font-size:10px;color:var(--verm);font-weight:700}
+.ped-footer{padding:10px 14px;border-top:1px solid var(--borda)}
+.btn-confirmar-ped{width:100%;padding:12px;border:none;border-radius:10px;background:var(--verde-c);color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.btn-confirmar-ped:disabled{background:var(--verde-bg);color:var(--verde-m);cursor:default}
+.estoq-export{margin:12px;padding:15px;border:none;border-radius:14px;background:var(--laranja);color:#fff;font-size:15px;font-weight:700;cursor:pointer;width:calc(100% - 24px);box-shadow:0 4px 12px rgba(230,81,0,.3);display:flex;align-items:center;justify-content:center;gap:8px}
+.empty-state{text-align:center;padding:48px 20px;color:var(--texto2)}
+.empty-state .ei{font-size:48px;margin-bottom:12px}
+
+/* NOTIF BADGE */
+.notif-dot{display:inline-block;background:#FF5252;color:#fff;border-radius:20px;padding:2px 7px;font-size:10px;font-weight:700;margin-left:6px}
+
+.content-scroll{flex:1;overflow-y:auto;padding-bottom:130px}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="tela ativa" id="tela-home">
+  <div class="home-hero">
+    <h1>Café <span>Recife Antigo</span></h1>
+    <p>Sistema de Requisições Internas</p>
+    <div class="home-data" id="home-data-txt"></div>
+    <div class="loja-sel">
+      <button class="loja-btn ativo" onclick="setLoja('JAQUEIRA',this)">🏠 Jaqueira</button>
+      <button class="loja-btn" onclick="setLoja('RECIFE',this)">🏪 Recife</button>
+    </div>
+  </div>
+  <div class="cards-wrap">
+    <div class="div-label">Selecione seu setor</div>
+    <button class="setor-card card-prod" onclick="abrirSetor('prod_doces')">
+      <span class="s-icon">🍰</span>
+      <div style="flex:1">
+        <div class="s-nome">Produção Doces e Salgados</div>
+        <div class="s-desc">Ingredientes para confeitaria e salgados</div>
+        <div class="s-badge" id="badge-prod_doces">—</div>
+      </div>
+    </button>
+    <button class="setor-card card-coz" onclick="abrirSetor('cozinha_quente')">
+      <span class="s-icon">🍳</span>
+      <div style="flex:1">
+        <div class="s-nome">Cozinha Quente</div>
+        <div class="s-desc">SPs, proteínas, câmara e congelados</div>
+        <div class="s-badge" id="badge-cozinha_quente">—</div>
+      </div>
+    </button>
+    <button class="setor-card card-bar" onclick="abrirSetor('bar')">
+      <span class="s-icon">☕</span>
+      <div style="flex:1">
+        <div class="s-nome">Bar / Barista</div>
+        <div class="s-desc">Café, leite, xaropes, bebidas e descartáveis</div>
+        <div class="s-badge" id="badge-bar">—</div>
+      </div>
+    </button>
+    <button class="setor-card card-bar2" id="card-bar-apoio" onclick="abrirSetor('bar_apoio')" style="display:none">
+      <span class="s-icon">🍹</span>
+      <div style="flex:1">
+        <div class="s-nome">To Go Bar</div>
+        <div class="s-desc">Mesmos itens do Bar · operação To Go</div>
+        <div class="s-badge" id="badge-bar_apoio">—</div>
+      </div>
+    </button>
+    <button class="setor-card card-esg" onclick="abrirSetor('esg')">
+      <span class="s-icon">🧹</span>
+      <div style="flex:1">
+        <div class="s-nome">ESG — Material de Limpeza</div>
+        <div class="s-desc">Produtos de higiene e limpeza</div>
+        <div class="s-badge" id="badge-esg">—</div>
+      </div>
+    </button>
+    <div class="div-label" style="margin-top:4px">Controle</div>
+    <button class="setor-card" style="background:linear-gradient(135deg,#C62828,#E53935)" onclick="abrirTela('tela-historico');carregarHistorico()">
+      <span class="s-icon">📋</span>
+      <div style="flex:1">
+        <div class="s-nome">Histórico de Faltas</div>
+        <div class="s-desc">Itens em falta registrados por data</div>
+        <div class="s-badge" id="badge-faltas">carregando...</div>
+      </div>
+    </button>
+    <div class="div-label" style="margin-top:4px">Estoquista</div>
+    <button class="setor-card card-estoq" onclick="abrirTela('tela-estoquista')">
+      <span class="s-icon">📦</span>
+      <div style="flex:1">
+        <div class="s-nome">Estoquista</div>
+        <div class="s-desc">Ver pedidos, confirmar entregas e exportar CSV</div>
+        <div class="s-badge" id="badge-estoq">carregando...</div>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ TELA REQUISIÇÃO ══════════ -->
+<div class="tela" id="tela-req">
+  <div class="hdr" id="req-hdr">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-home')">← Voltar</button>
+      <span class="hdr-titulo" id="req-titulo"></span>
+      <div style="width:60px"></div>
+    </div>
+    <div class="hdr-sub" id="req-sub"></div>
+  </div>
+  <div class="busca-wrap">
+    <input type="search" placeholder="🔍 Buscar item..." id="req-busca" oninput="renderReq()" autocomplete="off">
+    <div class="cat-toolbar">
+      <button class="cat-tb-btn" onclick="expandirTodas()">⊞ Expandir todas</button>
+      <button class="cat-tb-btn" onclick="recolherTodas()">⊟ Recolher todas</button>
+    </div>
+  </div>
+  <div class="content-scroll" id="req-lista"></div>
+  <div class="barra-bot">
+    <div class="resumo-float" id="req-resumo">
+      <div class="res-txt">
+        <strong id="req-count-txt">0 itens</strong>
+        <span>prontos para enviar</span>
+      </div>
+      <button class="btn-ver-res" onclick="abrirModalConf()">Ver resumo</button>
+    </div>
+    <button class="btn-enviar-req" id="req-btn-env" onclick="abrirModalConf()" style="background:var(--verde-c)">
+      📋 Enviar requisição ao estoquista
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ TELA ALERTAS (setor após confirmação) ══════════ -->
+<div class="tela" id="tela-alertas">
+  <div class="hdr" id="alert-hdr" style="background:var(--verde-c)">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-home')">← Início</button>
+      <span class="hdr-titulo">Acompanhar pedido</span>
+      <button class="btn-icon" onclick="carregarAlertas()" title="Atualizar">🔄</button>
+    </div>
+    <div class="hdr-sub" id="alert-sub">Atualizando...</div>
+  </div>
+  <div class="content-scroll" id="alertas-lista"></div>
+  <div style="padding:16px">
+    <button class="btn-outline" style="width:100%" onclick="novoPedido()">+ Novo pedido</button>
+  </div>
+</div>
+
+<!-- ══════════ TELA ESTOQUISTA ══════════ -->
+<div class="tela" id="tela-estoquista">
+  <div class="hdr" style="background:var(--laranja)">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-home')">← Voltar</button>
+      <span class="hdr-titulo">📦 Estoquista — <span id="estoq-loja-label">Jaqueira</span></span>
+      <button class="btn-icon" onclick="pedidoEmEdicao=null;carregarPedidos(true)" title="Atualizar" style="font-size:20px;width:40px;height:40px">🔄</button>
+    </div>
+    <div class="hdr-sub" id="estoq-sub">Pedidos do dia</div>
+  </div>
+  <div class="estoq-tabs">
+    <button class="estoq-tab ativo" onclick="setEstoqTab('pendentes',this)">🟡 Pendentes</button>
+    <button class="estoq-tab" onclick="setEstoqTab('confirmados',this)">✅ Confirmados</button>
+    <button class="estoq-tab" onclick="setEstoqTab('todos',this)">📋 Todos</button>
+  </div>
+  <div class="content-scroll" id="estoq-lista"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px">
+    <button onclick="abrirMovimento('entrada')"
+      style="padding:14px 8px;border:none;border-radius:12px;background:#1565C0;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(21,101,192,.3)">
+      📥 Entrada<br>Mercadoria
+    </button>
+    <button onclick="abrirMovimento('transferencia')"
+      style="padding:14px 8px;border:none;border-radius:12px;background:#6A1B9A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(106,27,154,.3)">
+      🔄 Trans-<br>ferência
+    </button>
+    <button onclick="abrirMovimento('clube17')"
+      style="padding:14px 8px;border:none;border-radius:12px;background:#BF360C;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(191,54,12,.3)">
+      🏢 Saída<br>Clube 17
+    </button>
+    <button onclick="exportarCSVDia()"
+      style="padding:14px 8px;border:none;border-radius:12px;background:var(--laranja);color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(230,81,0,.3)">
+      ⬇️ Exportar<br>CSV Dia
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════ TELA ENTRADA MERCADORIA ══════════ -->
+<div class="tela" id="tela-entrada">
+  <div class="hdr" style="background:#1565C0">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-estoquista')">← Voltar</button>
+      <span class="hdr-titulo">📥 Entrada Mercadoria</span>
+      <div style="width:60px"></div>
+    </div>
+    <div class="hdr-sub">Registre o que chegou hoje</div>
+  </div>
+  <div class="busca-wrap">
+    <input type="search" placeholder="🔍 Buscar item..." id="entrada-busca" oninput="renderMovimento('entrada')" autocomplete="off">
+  </div>
+  <div class="content-scroll" id="entrada-lista"></div>
+  <div class="barra-bot">
+    <div class="resumo-float" id="entrada-resumo">
+      <div class="res-txt"><strong id="entrada-count">0 itens</strong><span>para registrar</span></div>
+      <button class="btn-ver-res" onclick="confirmarMovimento('entrada')">Confirmar</button>
+    </div>
+    <button class="btn-enviar-req" onclick="confirmarMovimento('entrada')" style="background:#1565C0">
+      📥 Confirmar entrada de mercadoria
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ TELA TRANSFERÊNCIA ══════════ -->
+<div class="tela" id="tela-transferencia">
+  <div class="hdr" style="background:#6A1B9A">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-estoquista')">← Voltar</button>
+      <span class="hdr-titulo">🔄 Transferência</span>
+      <div style="width:60px"></div>
+    </div>
+    <div class="hdr-sub" id="transf-sub">Saindo da loja atual</div>
+  </div>
+  <div style="background:#fff;padding:10px 12px;border-bottom:1px solid var(--borda)">
+    <div style="font-size:11px;font-weight:700;color:var(--texto2);margin-bottom:6px;text-align:center">DESTINO DA TRANSFERÊNCIA:</div>
+    <div style="display:flex;gap:6px" id="transf-destinos">
+      <!-- preenchido por JS baseado na loja atual -->
+    </div>
+  </div>
+  <div class="busca-wrap">
+    <input type="search" placeholder="🔍 Buscar item..." id="transf-busca" oninput="renderMovimento('transferencia')" autocomplete="off">
+  </div>
+  <div class="content-scroll" id="transferencia-lista"></div>
+  <div class="barra-bot">
+    <div class="resumo-float" id="transferencia-resumo">
+      <div class="res-txt"><strong id="transferencia-count">0 itens</strong><span>para transferir</span></div>
+      <button class="btn-ver-res" onclick="confirmarMovimento('transferencia')">Confirmar</button>
+    </div>
+    <button class="btn-enviar-req" onclick="confirmarMovimento('transferencia')" style="background:#6A1B9A">
+      🔄 Confirmar transferência
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ TELA SAÍDA CLUBE 17 ══════════ -->
+<div class="tela" id="tela-clube17">
+  <div class="hdr" style="background:#BF360C">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-estoquista')">← Voltar</button>
+      <span class="hdr-titulo">🏢 Saída Clube 17</span>
+      <div style="width:60px"></div>
+    </div>
+    <div class="hdr-sub">Registre os itens enviados para o Clube 17</div>
+  </div>
+  <div class="busca-wrap">
+    <input type="search" placeholder="🔍 Buscar item..." id="clube17-busca" oninput="renderMovimento('clube17')" autocomplete="off">
+  </div>
+  <div class="content-scroll" id="clube17-lista"></div>
+  <div class="barra-bot">
+    <div class="resumo-float" id="clube17-resumo">
+      <div class="res-txt"><strong id="clube17-count">0 itens</strong><span>para registrar</span></div>
+      <button class="btn-ver-res" onclick="confirmarMovimento('clube17')">Confirmar</button>
+    </div>
+    <button class="btn-enviar-req" onclick="confirmarMovimento('clube17')" style="background:#BF360C">
+      🏢 Confirmar saída Clube 17
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ MODAL CONFIRMAÇÃO ══════════ -->
+<div class="overlay" id="modal-conf" onclick="fecharOverlay('modal-conf',event)">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-titulo" id="mc-titulo">Confirmar requisição</div>
+    <div class="m-sub" id="mc-sub"></div>
+    <div id="mc-lista"></div>
+    <div class="m-btns">
+      <button class="btn-cancel" onclick="fecharOverlay('modal-conf')">Voltar</button>
+      <button class="btn-confirm" id="mc-btn-env" onclick="enviarRequisicao()">
+        📤 Enviar para estoquista
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TELA HISTÓRICO FALTAS ══════════ -->
+<div class="tela" id="tela-historico">
+  <div class="hdr" style="background:var(--verm)">
+    <div class="hdr-row">
+      <button class="btn-back" onclick="abrirTela('tela-home')">← Voltar</button>
+      <span class="hdr-titulo">📋 Histórico de Faltas</span>
+      <button class="btn-icon" onclick="carregarHistorico()" title="Atualizar">🔄</button>
+    </div>
+    <div class="hdr-sub" id="hist-sub">Itens em falta registrados</div>
+  </div>
+  <div class="estoq-tabs">
+    <button class="estoq-tab ativo" onclick="setHistTab('hoje',this)">Hoje</button>
+    <button class="estoq-tab" onclick="setHistTab('semana',this)">Semana</button>
+    <button class="estoq-tab" onclick="setHistTab('todos',this)">Todos</button>
+  </div>
+  <div class="content-scroll" id="hist-lista"></div>
+  <button class="estoq-export" style="background:var(--verm)" onclick="exportarCSVFaltas()">
+    ⬇️ Exportar relatório de faltas
+  </button>
+</div>
+
+<!-- ══════════ ALERTA DE CONFIRMAÇÃO (toca no celular do cozinheiro) ══════════ -->
+<div class="alerta-confirm" id="alerta-confirm">
+  <div class="alerta-confirm-box">
+    <div class="alerta-confirm-icon" id="alerta-icon">📦</div>
+    <div class="alerta-confirm-titulo" id="alerta-titulo">Pedido respondido!</div>
+    <div class="alerta-confirm-sub" id="alerta-sub">O estoquista confirmou sua requisição</div>
+    <div id="alerta-itens"></div>
+    <button class="btn-fechar-alerta" onclick="fecharAlerta()">OK, entendido</button>
+  </div>
+</div>
+
+<!-- ══════════ LOADING ══════════ -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loading-txt">Enviando...</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIGURAÇÃO
+// ═══════════════════════════════════════════════════
+// IMPORTANTE: Cole aqui sua chave da API do Claude
+// Obtenha em: https://console.anthropic.com
+const API_KEY = 'SUA_CHAVE_AQUI';
+const STORAGE_KEY = 'cafe_jaqueira_requisicoes_v2';
+
+// ═══════════════════════════════════════════════════
+// ITENS POR SETOR — extraídos da planilha
+// ═══════════════════════════════════════════════════
+const ITENS = {
+
+  prod_doces: [
+    // Ingredientes confeitaria e produção salgados
+    {cat:'MASSAS E FARINHAS', nome:'Farinha de Trigo', unid:'kg'},
+    {cat:'MASSAS E FARINHAS', nome:'Amido de Milho', unid:'kg'},
+    {cat:'MASSAS E FARINHAS', nome:'Fermento Químico', unid:'pote'},
+    {cat:'MASSAS E FARINHAS', nome:'Bicarbonato', unid:'pote'},
+    {cat:'MASSAS E FARINHAS', nome:'Massa Folhada', unid:'kg'},
+    {cat:'AÇÚCARES', nome:'Açúcar Refinado', unid:'kg'},
+    {cat:'AÇÚCARES', nome:'Açúcar de Confeiteiro', unid:'kg'},
+    {cat:'AÇÚCARES', nome:'Açúcar Mascavo', unid:'kg'},
+    {cat:'CHOCOLATE E CACAU', nome:'Chocolate Nobre ao Leite', unid:'kg'},
+    {cat:'CHOCOLATE E CACAU', nome:'Chocolate Nobre Meio Amargo', unid:'kg'},
+    {cat:'CHOCOLATE E CACAU', nome:'Cacau em Pó', unid:'kg'},
+    {cat:'CHOCOLATE E CACAU', nome:'Chocolate em Pó', unid:'kg'},
+    {cat:'CHOCOLATE E CACAU', nome:'Granulado Chocolate', unid:'kg'},
+    {cat:'LATICÍNIOS', nome:'Manteiga sem Sal', unid:'kg'},
+    {cat:'LATICÍNIOS', nome:'Cream Cheese', unid:'kg'},
+    {cat:'LATICÍNIOS', nome:'Creme de Leite Fresco', unid:'L'},
+    {cat:'LATICÍNIOS', nome:'Leite Condensado', unid:'lata'},
+    {cat:'LATICÍNIOS', nome:'Leite em Pó', unid:'kg'},
+    {cat:'LATICÍNIOS', nome:'Ovos', unid:'caixa'},
+    {cat:'LATICÍNIOS', nome:'Ricota', unid:'kg'},
+    {cat:'CÂMARA CONGELADA', nome:'Ganache ao Leite', unid:'kg'},
+    {cat:'CÂMARA CONGELADA', nome:'Ganache Meio Amargo', unid:'kg'},
+    {cat:'CÂMARA CONGELADA', nome:'Brigadeiro Pronto', unid:'kg'},
+    {cat:'CÂMARA CONGELADA', nome:'Cocada Cremosa', unid:'pote'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Ganache Café', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Chocolate Quente', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Crumble', unid:'kg'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Granola', unid:'kg'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Geleia Frutas Vermelhas', unid:'L'},
+    {cat:'CÂMARA RESFRIADA', nome:'Frutas Vermelhas', unid:'kg'},
+    {cat:'CÂMARA RESFRIADA', nome:'Morangos', unid:'kg'},
+    {cat:'ESTOQUE SECO', nome:'Essência de Baunilha', unid:'frasco'},
+    {cat:'ESTOQUE SECO', nome:'Coco Ralado', unid:'kg'},
+    {cat:'ESTOQUE SECO', nome:'Pistache Picado', unid:'kg'},
+    {cat:'ESTOQUE SECO', nome:'Nozes', unid:'kg'},
+    {cat:'ESTOQUE SECO', nome:'Gelatina em Pó', unid:'pct'},
+    {cat:'ESTOQUE SECO', nome:'Crumble', unid:'pote'},
+    {cat:'ESTOQUE SECO', nome:'Granola', unid:'pote'},
+    {cat:'ESTOQUE SECO', nome:'Chips de Banana', unid:'pote'},
+    {cat:'EMBALAGENS', nome:'Caixinha para Bolo', unid:'pct'},
+    {cat:'EMBALAGENS', nome:'Bandeja Descartável', unid:'pct'},
+    {cat:'EMBALAGENS', nome:'Papel Manteiga', unid:'rolo'},
+    {cat:'EMBALAGENS', nome:'Forma Alumínio', unid:'unid'},
+    {cat:'EMBALAGENS', nome:'Caixinha Salgado', unid:'pct'},
+  ],
+
+  cozinha_quente: [
+    // ════════ FREEZER BRANCA ════════
+    {cat:'❄️ FREEZER BRANCA', nome:'Mini Coxinhas (20)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Churros (20)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Sopa Caldo Verde (5)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Sopa Milho (5)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Sopa Brócolis (5)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Feijão Preto (2)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Feijão Verde (4)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Brócolis Queimado (2)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Molho Escuro pt 500ml (2)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Molho Teriaken pt 1L (2)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Cogumelos (3)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Cebola Caramelizada (3)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Bacon Caramelizado (2)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Frango Triturado (2)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Salame (1)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Espinafre (1)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Coco Ralado 500g (2)', unid:'pct'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Carne Seca (2)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Caponata (2)', unid:'pote'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Parmesão Ralado 1kg (3)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Presunto 1kg (3)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Queijo Bufala 1kg (4)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Queijo do Reino 1kg (10)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Mussarela Fatiada 1kg (6)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Queijo Manteiga 1kg (2)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Pão Integral fatias (10)', unid:'pct'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Pão Italiano fatias (20)', unid:'pct'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Pão Brioche fatias (30)', unid:'pct'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Inhoque porção (20)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Almôndegas porção (20)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Arbório porção (20)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Arroz Vermelho porção (10)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Arroz Integral porção (10)', unid:'porção'},
+    {cat:'❄️ FREEZER BRANCA', nome:'No Dog (20)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Cocada (5)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Parme Veg unid (10)', unid:'unid'},
+    {cat:'❄️ FREEZER BRANCA', nome:'Molho de Castanha porção (20)', unid:'porção'},
+
+    // ════════ FREEZE BRANCA 2 ════════
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Parme Carne (30)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Parme Frango (50)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Isca de Carne (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Isca de Frango (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Pailard (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Carne de Sol (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Camarão Limpo (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Camarão Empanado (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Filé Tilápia (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Filé Salmão (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Isca Salmão (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Burguer (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Medalhão (20)', unid:'unid'},
+    {cat:'❄️ FREEZE BRANCA 2', nome:'Batata Palito (6)', unid:'pote'},
+
+    // ════════ GELADEIRA PRETA ════════
+    {cat:'🖤 GELADEIRA PRETA', nome:'Clorofila 500 (1)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Requeijão (1)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Coalho Ralado 1kg (2)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Coalho Barra 1kg (2)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Manteiga 1kg (3)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Pesto 500 (2)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Coxinha 500 (2)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Confit (3)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Caesar 1kg (2)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Cereja 500g (3)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Tomate Seco 1kg (3)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Pasta Abacate 1kg (1)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Molho Aiole 500 (2)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Pasta Ricota 500 (1)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Pasta de Alho 500 (3)', unid:'unid'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Espaguette pote (3)', unid:'pote'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Penne pote (1)', unid:'pote'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Bacon Assado pote (1)', unid:'pote'},
+    {cat:'🖤 GELADEIRA PRETA', nome:'Arroz Branco pote (2)', unid:'pote'},
+
+    // ════════ PRATELEIRA SALADA E MICROONDAS ════════
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Coentro (1 mol)', unid:'mol'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Salsa Crespa (2 mol)', unid:'mol'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Salsa Lisa (2 mol)', unid:'mol'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Alface Roxa (15 pct)', unid:'pct'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Alface Crespa (15 pct)', unid:'pct'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Cebola (5 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Tomate Salada (5 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Gengibre (1 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Banana (1 palma)', unid:'palma'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Limão Siciliano (7 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Limão Verde (7 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Ovos pote (2)', unid:'pote'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Batata Inglesa pote (3)', unid:'pote'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Caldo Legumes (1 pt)', unid:'pt'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Molho Tomate (3 pt)', unid:'pt'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Molho Queijo (3 pt)', unid:'pt'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Peito Frango (40 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Goma de Tapioca (4 pct)', unid:'pct'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Pão Now Dog (2 pct)', unid:'pct'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Pão Hamburguer (2 pct)', unid:'pct'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Pão Francês (20 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Pão Baguete (20 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Croissant (10 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Coxinha Frango Empanada (30 und)', unid:'und'},
+    {cat:'🥗 PRATELEIRA SALADA E MICROONDAS', nome:'Coxinha Catupiry Empanada (30 und)', unid:'und'},
+
+    // ════════ ESTOQUE SECO ════════
+    {cat:'📦 ESTOQUE SECO', nome:'Óleo Misto (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Creme de Leite (3)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Manteiga (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Margarina (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Folha Louro (40g)', unid:'g'},
+    {cat:'📦 ESTOQUE SECO', nome:'Pimenta Reino (100g)', unid:'g'},
+    {cat:'📦 ESTOQUE SECO', nome:'Sal (1kg)', unid:'kg'},
+    {cat:'📦 ESTOQUE SECO', nome:'Caldo Frango (1kg)', unid:'kg'},
+    {cat:'📦 ESTOQUE SECO', nome:'Óleo Girasol (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Vinagre (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Barbecue (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Mostarda (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Ketchup (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Trigo 3 uni (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Açúcar 2 unid (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Croutons (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Panko 1 unid (2 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Uva Passa (500g)', unid:'g'},
+    {cat:'📦 ESTOQUE SECO', nome:'Xerém Castanha (500g)', unid:'g'},
+    {cat:'📦 ESTOQUE SECO', nome:'Coco Torrado (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Farofa (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Mix de Canela (500g)', unid:'g'},
+    {cat:'📦 ESTOQUE SECO', nome:'Gergilim Branco (300g)', unid:'g'},
+    {cat:'📦 ESTOQUE SECO', nome:'Chips Banana (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Torrada (1 pt)', unid:'pt'},
+    {cat:'📦 ESTOQUE SECO', nome:'Luvas (1 pct)', unid:'pct'},
+    {cat:'📦 ESTOQUE SECO', nome:'Perfex (20 und)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Emb Viag Almoço (10 und)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Emb Viag Salada (10 und)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Emb Sopa pote 500ml (10 und)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Isqueiro (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Maçarico (2)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Gas Maçarico (2)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Papel Para Tauba (100 und)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Touca (10 und)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Saco Porção Grande (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Saco Porção Pequeno (1)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Etiqueta Validade (2)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Pastilha Azul (4)', unid:'und'},
+    {cat:'📦 ESTOQUE SECO', nome:'Pastilha Vermelha (5)', unid:'und'},
+
+    // ════════ PRATO DO DIA ════════
+    {cat:'🍛 PRATO DO DIA', nome:'Strogonoff (30)', unid:'porção'},
+    {cat:'🍛 PRATO DO DIA', nome:'Batata Palha (1 PCT)', unid:'pct'},
+    {cat:'🍛 PRATO DO DIA', nome:'Picadinho (30)', unid:'porção'},
+    {cat:'🍛 PRATO DO DIA', nome:'Farofa (1 PT)', unid:'pt'},
+    {cat:'🍛 PRATO DO DIA', nome:'Supremo (30)', unid:'porção'},
+    {cat:'🍛 PRATO DO DIA', nome:'Feijoada (30)', unid:'porção'},
+    {cat:'🍛 PRATO DO DIA', nome:'Cebola Roxa (4 und)', unid:'und'},
+    {cat:'🍛 PRATO DO DIA', nome:'Pimenta de Cheiro (3 und)', unid:'und'},
+    {cat:'🍛 PRATO DO DIA', nome:'Tomate Salada (5 und)', unid:'und'},
+    {cat:'🍛 PRATO DO DIA', nome:'Coentro (1 mol)', unid:'mol'},
+    {cat:'🍛 PRATO DO DIA', nome:'Pimentão Amarelo (2 und)', unid:'und'},
+    {cat:'🍛 PRATO DO DIA', nome:'Couve (1 mol)', unid:'mol'},
+  ],
+
+  bar: [
+    {cat:'CAFÉ E BEBIDAS QUENTES', nome:'Café Espresso', unid:'kg'},
+    {cat:'CAFÉ E BEBIDAS QUENTES', nome:'Chá Variados', unid:'caixa'},
+    {cat:'LATICÍNIOS', nome:'Leite Integral', unid:'L'},
+    {cat:'LATICÍNIOS', nome:'Leite sem Lactose', unid:'L'},
+    {cat:'LATICÍNIOS', nome:'Creme de Leite', unid:'caixa'},
+    {cat:'LATICÍNIOS', nome:'Manteiga', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Xarope Baunilha', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Xarope Caramelo', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Xarope Avelã', unid:'unid'},
+    {cat:'XAROPES E COMPLEMENTOS', nome:'Canela em Pó', unid:'pote'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Ganache Café', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Chocolate Quente', unid:'L'},
+    {cat:'CÂMARA CONGELADA', nome:'SP Geleia Frutas Vermelhas', unid:'L'},
+    {cat:'CÂMARA RESFRIADA', nome:'Limão Taiti', unid:'kg'},
+    {cat:'CÂMARA RESFRIADA', nome:'Laranja', unid:'kg'},
+    {cat:'CÂMARA RESFRIADA', nome:'Morango', unid:'bandeja'},
+    {cat:'CÂMARA RESFRIADA', nome:'Hortelã', unid:'maço'},
+    {cat:'CÂMARA RESFRIADA', nome:'Gengibre', unid:'unid'},
+    {cat:'BEBIDAS', nome:'Água Mineral 600ml', unid:'fardo'},
+    {cat:'BEBIDAS', nome:'Água com Gás', unid:'fardo'},
+    {cat:'BEBIDAS', nome:'Suco Caixinha', unid:'caixa'},
+    {cat:'DESCARTÁVEIS', nome:'Copo Café 50ml', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Copo Bebida 300ml', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Palito Mexedor', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Guardanapo', unid:'pct'},
+    {cat:'DESCARTÁVEIS', nome:'Sacola Papel', unid:'pct'},
+
+    // ════════ BEBIDAS (planilha física) ════════
+    {cat:'🥤 BEBIDAS', nome:'Água sem Gás', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Chantilly', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Coca Cola', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Coca Cola Zero', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Fanta', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Guaraná Antártica', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Guaraná Antártica Zero', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Heineken', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Iogurte Natural', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Leitíssimo', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Mel', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Nude Bebida Vegetal', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Red Bull', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Red Bull Zero Açúcar', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Schweppes Citrus', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Sprite', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Tônica Antártica', unid:'unid'},
+    {cat:'🥤 BEBIDAS', nome:'Xarope de Guaraná', unid:'unid'},
+
+    // ════════ SORVETE ════════
+    {cat:'🍦 SORVETE', nome:'Sorvete Baunilha', unid:'pote'},
+    {cat:'🍦 SORVETE', nome:'Sorvete Cappuccino', unid:'pote'},
+    {cat:'🍦 SORVETE', nome:'Sorvete Chocolate', unid:'pote'},
+    {cat:'🍦 SORVETE', nome:'Sorvete Creme', unid:'pote'},
+    {cat:'🍦 SORVETE', nome:'Sorvete Morango', unid:'pote'},
+
+    // ════════ MONIN / XAROPES ════════
+    {cat:'🍓 MONIN / XAROPES', nome:'Pure Maracujá', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Pure Morango', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Pure Pêssego', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Cookies', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Granberry', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Grenadini', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Limão Siciliano', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Maçã Verde', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Morango', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Pêssego', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Maracujá', unid:'unid'},
+    {cat:'🍓 MONIN / XAROPES', nome:'Xarope Tangerina', unid:'unid'},
+
+    // ════════ DESTILADOS ════════
+    {cat:'🥃 DESTILADOS', nome:'Chivas', unid:'unid'},
+    {cat:'🥃 DESTILADOS', nome:'Licor', unid:'unid'},
+    {cat:'🥃 DESTILADOS', nome:'Red Label', unid:'unid'},
+    {cat:'🥃 DESTILADOS', nome:'Vodca Importada', unid:'unid'},
+    {cat:'🥃 DESTILADOS', nome:'Vodca Nacional', unid:'unid'},
+
+    // ════════ INSUMOS / ESTOQUE SECO ════════
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Adoçante Líquido', unid:'frasco'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Açúcar Cristal', unid:'kg'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Azeite Garrafa 250ml', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Cacau 100%', unid:'kg'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Cacau 50%', unid:'kg'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Calda Sorvete Caramelo', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Calda Sorvete Chocolate', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Calda Sorvete Morango', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Cápsula Café Descafeinado', unid:'caixa'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Chocolate em Barra ao Leite', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Doce de Leite', unid:'pote'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Erva Matte', unid:'pct'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Leite Condensado Lata 395g', unid:'lata'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Leite de Coco 200ml', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Nescau', unid:'pote'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Nutella', unid:'pote'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Ovomaltine', unid:'pote'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Paçoca', unid:'pct'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Pimenta Tabasco', unid:'unid'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Sachê Açúcar', unid:'cx'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Sachê Adoçante', unid:'cx'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Sachê Katchup', unid:'cx'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Sachê Maionese', unid:'cx'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Sachê Mostarda', unid:'cx'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Sachê Sal', unid:'cx'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'SP Crouble', unid:'pote'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'SP Granola', unid:'pote'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'Biscoito Maizena', unid:'pct'},
+    {cat:'📦 INSUMOS / ESTOQUE SECO', nome:'SP Guanache de Café', unid:'unid'},
+
+    // ════════ DETOX ════════
+    {cat:'🥗 DETOX', nome:'Detox Verde (porcionado)', unid:'unid'},
+    {cat:'🥗 DETOX', nome:'Detox Vermelho (porcionado)', unid:'unid'},
+
+    // ════════ FRUTAS E POLPAS ════════
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Açaí', unid:'kg'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Beterraba', unid:'kg'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Cenoura', unid:'kg'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Abacaxi', unid:'unid'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Abacaxi (porcionado)', unid:'pote'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Frutas Vermelhas', unid:'kg'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Morango Congelado', unid:'kg'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Morango Fresco', unid:'kg'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Morango (porcionado)', unid:'pote'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Frutas Vermelhas (porcionada)', unid:'pote'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Cajá', unid:'pct'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Maracujá', unid:'pct'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Acerola', unid:'pct'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Graviola', unid:'pct'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Uva', unid:'pct'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Tangerina', unid:'pct'},
+    {cat:'🍓 FRUTAS E POLPAS', nome:'Polpa Caju', unid:'pct'},
+
+    // ════════ DESCARTÁVEIS (planilha) ════════
+    {cat:'🥄 DESCARTÁVEIS', nome:'Paleta de Mexer (transparente)', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Colher de Mexer (madeira)', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Copo Térmico P', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Copo Térmico G', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Copo 180ml', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Copo Soulpack 350ml', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Copo de Suco Jaqueira', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Hambúrgueira', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Emb. Refeição', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Colher Refeição', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Garfo Refeição', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Gás Chantilly', unid:'unid'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Faca Refeição', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Colher Sobremesa', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Emb. Tartalete', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Emb. Cupcake', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Emb. Brigadeiro', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Molheira com Tampa', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Saquinho Papel Kraft', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Sacola iFood P', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Sacola iFood M', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Sacola iFood G', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Papel Filme', unid:'rolo'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Papel Seda Jaqueira', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Prato Descartável', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Bobina Congelamento 20x30 P', unid:'rolo'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Bobina Congelamento 30x40 M', unid:'rolo'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Bobina Congelamento 40x60 G', unid:'rolo'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Canudo Fino', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Canudo Grosso', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Filtro V60', unid:'pct'},
+    {cat:'🥄 DESCARTÁVEIS', nome:'Filtro Koar', unid:'pct'},
+
+    // ════════ LIMPEZA (uso interno bar) ════════
+    {cat:'🧽 LIMPEZA BAR', nome:'Luvas Vinil G', unid:'caixa'},
+    {cat:'🧽 LIMPEZA BAR', nome:'Toucas', unid:'pct'},
+    {cat:'🧽 LIMPEZA BAR', nome:'Álcool 70% (bar)', unid:'L'},
+    {cat:'🧽 LIMPEZA BAR', nome:'Pano Panflex', unid:'unid'},
+    {cat:'🧽 LIMPEZA BAR', nome:'Detergente Neutro', unid:'L'},
+    {cat:'🧽 LIMPEZA BAR', nome:'Papel Toalha Interfoliado', unid:'fardo'},
+    {cat:'🧽 LIMPEZA BAR', nome:'Cafiza', unid:'unid'},
+
+    // ════════ DOCES PRONTOS (faltavam) ════════
+    {cat:'🍰 DOCES EXTRAS', nome:'Pote Brownie', unid:'pote'},
+    {cat:'🍰 DOCES EXTRAS', nome:'Brigadeiro Amargo', unid:'unid'},
+    {cat:'🍰 DOCES EXTRAS', nome:'Brigadeiro Granulado (und)', unid:'unid'},
+    {cat:'🍰 DOCES EXTRAS', nome:'Brigadeiro Recheado (und)', unid:'unid'},
+    {cat:'🍰 DOCES EXTRAS', nome:'Brigadeiro de Coco (und)', unid:'unid'},
+
+    // ════════ VITRINE — DOCES PRONTOS (reposição) ════════
+    {cat:'🍰 VITRINE DOCES', nome:'Slice Red Velvet', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Slice Brigadeiro', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Slice Morango', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Mono Cookie', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Mono Bannof', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Mono Limão', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Mono Noiva', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Brigadeiro ao Leite (und)', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Tartalet (und)', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Cupcake (und)', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Pastel de Belém (und)', unid:'unid'},
+    {cat:'🍰 VITRINE DOCES', nome:'Churros (porção)', unid:'porção'},
+
+    // ════════ VITRINE — SALGADOS (reposição) ════════
+    {cat:'🥟 VITRINE SALGADOS', nome:'Coxinha de Frango (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Coxinha Catupiry (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Pastel Frango (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Pastel Queijo (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Empada Frango (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Empada Camarão (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Pão de Queijo (porção)', unid:'porção'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Pão Vegano (porção)', unid:'porção'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Mini Coxinhas (porção)', unid:'porção'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Quiche Frango (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Quiche Queijo do Reino (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Quiche Espinafre (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Quiche Lorrayne (und)', unid:'unid'},
+    {cat:'🥟 VITRINE SALGADOS', nome:'Quiche Integral de Frango (und)', unid:'unid'},
+
+    // ════════ VITRINE — BOLOS (reposição) ════════
+    {cat:'🎂 VITRINE BOLOS', nome:'Bolo Laranja (fatia)', unid:'fatia'},
+    {cat:'🎂 VITRINE BOLOS', nome:'Bolo Romeu e Julieta (fatia)', unid:'fatia'},
+
+    // ════════ VITRINE — POTES (eventos / extras) ════════
+    {cat:'🍫 VITRINE POTES', nome:'Brigadeiro Meio Amargo (und)', unid:'unid'},
+    {cat:'🍫 VITRINE POTES', nome:'Brownie Porcionado (pote)', unid:'pote'},
+    {cat:'🍫 VITRINE POTES', nome:'Brownie Evento Porcionado (pote)', unid:'pote'},
+    {cat:'🍫 VITRINE POTES', nome:'Biscoitinho no Pote (evento)', unid:'pote'},
+    {cat:'🍫 VITRINE POTES', nome:'Cocada Forno Cremosa (pote)', unid:'pote'},
+  ],
+
+  esg: [
+    {cat:'LIMPEZA GERAL', nome:'Detergente Líquido', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Água Sanitária', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Desinfetante', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Multiuso Spray', unid:'frasco'},
+    {cat:'LIMPEZA GERAL', nome:'Álcool 70%', unid:'L'},
+    {cat:'LIMPEZA GERAL', nome:'Álcool Gel', unid:'frasco'},
+    {cat:'LIMPEZA GERAL', nome:'Desincrustante', unid:'frasco'},
+    {cat:'LIMPEZA GERAL', nome:'Limpa Vidros', unid:'frasco'},
+    {cat:'COPA E COZINHA', nome:'Detergente Desincrustante Industrial', unid:'kg'},
+    {cat:'COPA E COZINHA', nome:'Sanitizante para Alimentos', unid:'L'},
+    {cat:'COPA E COZINHA', nome:'Esponja Dupla Face', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Luva Borracha', unid:'par'},
+    {cat:'COPA E COZINHA', nome:'Pano de Prato', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Rodo', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Vassoura', unid:'unid'},
+    {cat:'COPA E COZINHA', nome:'Balde', unid:'unid'},
+    {cat:'HIGIENE PESSOAL', nome:'Sabonete Líquido', unid:'L'},
+    {cat:'HIGIENE PESSOAL', nome:'Papel Toalha', unid:'fardo'},
+    {cat:'HIGIENE PESSOAL', nome:'Papel Higiênico', unid:'fardo'},
+    {cat:'HIGIENE PESSOAL', nome:'Touca Descartável', unid:'pct'},
+    {cat:'HIGIENE PESSOAL', nome:'Luva Descartável', unid:'caixa'},
+    {cat:'HIGIENE PESSOAL', nome:'Máscara Descartável', unid:'caixa'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Filme PVC', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Papel Alumínio', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Saco de Lixo 100L', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Saco de Lixo 200L', unid:'rolo'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Saco Zip Lock', unid:'pct'},
+    {cat:'DESCARTÁVEIS COZINHA', nome:'Embalagem Marmita', unid:'pct'},
+  ],
+};
+
+// Bar Apoio (Recife) compartilha a mesma lista do Bar.
+// Assim, adicionar item no Bar aparece automático no Bar Apoio.
+ITENS.bar_apoio = ITENS.bar;
+
+const SETOR_CFG = {
+  prod_doces:    {nome:'Produção Doces e Salgados', icone:'🍰', cor:'#1A3A2A'},
+  cozinha_quente:{nome:'Cozinha Quente',             icone:'🍳', cor:'#4A148C'},
+  bar:           {nome:'Bar / Barista',              icone:'☕', cor:'#1565C0'},
+  bar_apoio:     {nome:'To Go Bar',                  icone:'🍹', cor:'#00838F', somenteLoja:'RECIFE'},
+  esg:           {nome:'ESG — Limpeza',              icone:'🧹', cor:'#2E7D32'},
+};
+
+// ═══════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════
+let lojaAtual = 'JAQUEIRA';
+let setorAtual = null;
+let pedidoAtual = {}; // nome → qtd
+let estoqTab = 'pendentes';
+let ultimoReqId = null;
+let pollingInterval = null;
+
+// ═══════════════════════════════════════════════════
+// STORAGE (usa Claude API como backend via artifacts storage)
+// ═══════════════════════════════════════════════════
+function getStorageKey() { return `req_${lojaAtual}_${hoje()}`; }
+
+function hoje() { return new Date().toLocaleDateString('pt-BR'); }
+function horaAgora() { return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+
+
+const BIN_ID = '6a03b146adc21f119a8f80d1';
+const MASTER_KEY = '$2a$10$XxSWLf8fYZpZgO5mGyATQ.HLXdcHdLJdbILKEHgto8keEgQj7lWXa';
+const BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Master-Key': MASTER_KEY,
+  'X-Bin-Versioning': 'false'
+};
+
+// ═══════════════════════════════════════════════════════════
+// CACHE LOCAL + FILA OFFLINE (funciona mesmo sem internet)
+// Cache SEPARADO por loja pra evitar conflito Jaqueira/Recife
+// ═══════════════════════════════════════════════════════════
+function CACHE_KEY() { return 'cafe_cache_v2_' + lojaAtual; }
+function FILA_KEY()  { return 'cafe_fila_v2_'  + lojaAtual; }
+
+function cacheLer() {
+  try {
+    var s = localStorage.getItem(CACHE_KEY());
+    return s ? JSON.parse(s) : [];
+  } catch(e) { return []; }
+}
+
+function cacheSalvar(lista) {
+  try { localStorage.setItem(CACHE_KEY(), JSON.stringify(lista)); } catch(e) {}
+}
+
+function filaLer() {
+  try {
+    var s = localStorage.getItem(FILA_KEY());
+    return s ? JSON.parse(s) : [];
+  } catch(e) { return []; }
+}
+
+function filaAdicionar(req) {
+  var f = filaLer();
+  f.push(req);
+  try { localStorage.setItem(FILA_KEY(), JSON.stringify(f)); } catch(e) {}
+}
+
+function filaLimpar() {
+  try { localStorage.removeItem(FILA_KEY()); } catch(e) {}
+}
+
+async function lerDados() {
+  // Lê cache local primeiro, tenta servidor em paralelo
+  var cache = cacheLer();
+  try {
+    var r = await Promise.race([
+      fetch(BIN_URL + '/latest', {headers: HEADERS, cache: 'no-store'}),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    var j = await r.json();
+    var todos = (j.record && j.record.requisicoes) || [];
+    // Mescla com fila offline pendente
+    var fila = filaLer();
+    if(fila.length) todos = todos.concat(fila);
+    cacheSalvar(todos);
+    var h = hoje();
+    var loja = lojaAtual;
+    return todos.filter(function(x){ return x.data === h && x.loja === loja; });
+  } catch(e) {
+    console.warn('lerDados — usando cache local:', e.message);
+    var h = hoje(), loja = lojaAtual;
+    return cache.filter(function(x){ return x.data === h && x.loja === loja; });
+  }
+}
+
+async function lerTodos() {
+  var cache = cacheLer();
+  try {
+    var r = await Promise.race([
+      fetch(BIN_URL + '/latest', {headers: HEADERS, cache: 'no-store'}),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 8000); })
+    ]);
+    var j = await r.json();
+    var todos = (j.record && j.record.requisicoes) || [];
+    var fila = filaLer();
+    if(fila.length) todos = todos.concat(fila);
+    cacheSalvar(todos);
+    return todos;
+  } catch(e) {
+    console.warn('lerTodos — usando cache local:', e.message);
+    return cache;
+  }
+}
+
+async function salvarDados(lista_dia) {
+  // Atualiza cache local IMEDIATAMENTE
+  var cache = cacheLer();
+  var h = hoje();
+  var loja = lojaAtual;
+  var outros = cache.filter(function(x){ return !(x.data === h && x.loja === loja); });
+  var novo = outros.concat(lista_dia);
+  cacheSalvar(novo);
+
+  // Tenta servidor com timeout curto
+  try {
+    await Promise.race([
+      fetch(BIN_URL, {
+        method: 'PUT',
+        headers: HEADERS,
+        body: JSON.stringify({requisicoes: novo})
+      }),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+    ]);
+    filaLimpar(); // sincronizou OK
+  } catch(e) {
+    console.warn('salvarDados — servidor falhou, dados ficam no cache:', e.message);
+    // Marca os itens que ainda não sincronizaram
+    lista_dia.forEach(function(it){
+      if(it.id && !filaLer().some(function(f){ return f.id === it.id; })){
+        filaAdicionar(it);
+      }
+    });
+  }
+}
+
+async function salvarReq(req) {
+  // Salva direto no cache local pra aparecer NA HORA
+  var cache = cacheLer();
+  cache.push(req);
+  cacheSalvar(cache);
+  filaAdicionar(req);
+
+  // Tenta sincronizar com servidor em background (não bloqueia)
+  try {
+    var todos = await lerTodos();
+    if(!todos.some(function(r){ return r.id === req.id; })) todos.push(req);
+    await Promise.race([
+      fetch(BIN_URL, {
+        method: 'PUT',
+        headers: HEADERS,
+        body: JSON.stringify({requisicoes: todos})
+      }),
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+    ]);
+    filaLimpar();
+  } catch(e) {
+    console.warn('salvarReq — ficou no cache, sincroniza depois:', e.message);
+    // Não joga erro pra cima — o dado já foi salvo no cache local
+  }
+}
+
+// Trava para impedir que duas confirmações simultâneas atropelem uma à outra
+var _gravacaoEmAndamento = Promise.resolve();
+
+async function atualizarReq(id, updates) {
+  // Enfileira a operação: espera a gravação anterior terminar antes de começar
+  var liberar;
+  var minhaVez = new Promise(function(res){ liberar = res; });
+  var anterior = _gravacaoEmAndamento;
+  _gravacaoEmAndamento = minhaVez;
+  await anterior;
+
+  try {
+    id = Number(id);
+
+    // 1) ATUALIZA CACHE LOCAL IMEDIATAMENTE (confirmação fica salva mesmo se servidor cair)
+    var cache = cacheLer();
+    var idxCache = cache.findIndex(function(r){ return Number(r.id) === id; });
+    if(idxCache >= 0) {
+      Object.assign(cache[idxCache], updates);
+      cacheSalvar(cache);
+    }
+
+    // 2) LÊ SERVIDOR FORÇADO (sem cache HTTP) e faz merge
+    try {
+      var resp = await Promise.race([
+        fetch(BIN_URL + '/latest', {headers: HEADERS, cache: 'no-store'}),
+        new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+      ]);
+      var j = await resp.json();
+      var todos = (j.record && j.record.requisicoes) || [];
+
+      // Procura o registro no servidor
+      var idx = todos.findIndex(function(r){ return Number(r.id) === id; });
+      if(idx >= 0) {
+        Object.assign(todos[idx], updates);
+      } else {
+        // Sumiu do servidor por race? Usa nosso cache como verdade
+        if(idxCache >= 0) todos.push(cache[idxCache]);
+      }
+
+      // 3) GRAVA DE VOLTA (com timeout)
+      await Promise.race([
+        fetch(BIN_URL, {
+          method: 'PUT',
+          headers: HEADERS,
+          body: JSON.stringify({requisicoes: todos}),
+          cache: 'no-store'
+        }),
+        new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); })
+      ]);
+
+      // Sincronizou — limpa fila offline
+      filaLimpar();
+    } catch(eServ) {
+      // Servidor falhou: cache local já tem a confirmação, vai sincronizar depois
+      console.warn('atualizarReq — servidor falhou (cache local mantém os dados):', eServ.message);
+    }
+  } finally {
+    liberar();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// NAVEGAÇÃO
+// ═══════════════════════════════════════════════════
+function abrirTela(id) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+  document.getElementById(id).classList.add('ativa');
+  if(id === 'tela-home') { atualizarHome(); stopPolling(); pedidoEmEdicao = null; }
+  if(id === 'tela-estoquista') { 
+    pedidoEmEdicao = null;
+    // Garante que o label da loja está coerente com lojaAtual
+    var lbl = document.getElementById('estoq-loja-label');
+    if(lbl) lbl.textContent = lojaAtual === 'JAQUEIRA' ? 'Jaqueira' : 'Recife';
+    carregarPedidos(true);
+  }
+  // Se entrou na tela de transferência, sempre remontar destinos (caso loja tenha mudado)
+  if(id === 'tela-transferencia') {
+    montarDestinosTransf();
+  }
+}
+
+function setLoja(loja, btn) {
+  lojaAtual = loja;
+  document.querySelectorAll('.loja-btn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  document.getElementById('estoq-loja-label').textContent = loja === 'JAQUEIRA' ? 'Jaqueira' : 'Recife';
+  atualizarVisibilidadeSetores();
+  atualizarHome();
+}
+
+// Mostra/esconde cards de setor conforme a loja atual
+function atualizarVisibilidadeSetores() {
+  Object.keys(SETOR_CFG).forEach(function(s) {
+    var cfg = SETOR_CFG[s];
+    if(!cfg.somenteLoja) return;
+    var card = document.getElementById('card-' + s.replace(/_/g,'-'));
+    if(card) card.style.display = (lojaAtual === cfg.somenteLoja) ? '' : 'none';
+  });
+}
+
+function abrirSetor(setor) {
+  // Compatibilidade: pedidos antigos com setores removidos (ex: 'retirada')
+  if(!SETOR_CFG[setor]) {
+    alert('Este setor não existe mais no app.');
+    return;
+  }
+  setorAtual = setor;
+  pedidoAtual = {};
+  const cfg = SETOR_CFG[setor];
+  document.getElementById('req-hdr').style.background = cfg.cor;
+  document.getElementById('req-titulo').textContent = cfg.icone + ' ' + cfg.nome;
+  document.getElementById('req-sub').textContent = lojaAtual + ' · ' + horaAgora();
+  document.getElementById('req-btn-env').style.background = cfg.cor;
+  document.getElementById('req-busca').value = '';
+  document.getElementById('mc-btn-env').style.background = cfg.cor;
+  renderReq();
+  abrirTela('tela-req');
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER REQUISIÇÃO
+// ═══════════════════════════════════════════════════
+// Remove acentos pra busca (Leitíssimo == Leitissimo, Açaí == acai, etc)
+function semAcento(s) {
+  return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+
+// Estado das categorias abertas (por setor). Memória só durante a sessão.
+let categoriasAbertas = {}; // { 'bar': Set(['🥤 BEBIDAS', ...]) }
+
+function isCatAberta(setor, cat) {
+  if(!categoriasAbertas[setor]) return false;
+  return categoriasAbertas[setor].has(cat);
+}
+function toggleCat(setor, cat) {
+  if(!categoriasAbertas[setor]) categoriasAbertas[setor] = new Set();
+  if(categoriasAbertas[setor].has(cat)) categoriasAbertas[setor].delete(cat);
+  else categoriasAbertas[setor].add(cat);
+  renderReq();
+}
+function expandirTodas() {
+  const itens = ITENS[setorAtual] || [];
+  categoriasAbertas[setorAtual] = new Set(itens.map(i=>i.cat));
+  renderReq();
+}
+function recolherTodas() {
+  categoriasAbertas[setorAtual] = new Set();
+  renderReq();
+}
+
+function renderReq() {
+  const buscaRaw = document.getElementById('req-busca').value.trim();
+  const busca = semAcento(buscaRaw); // busca sem acento
+  const itens = ITENS[setorAtual] || [];
+
+  // Agrupa itens por categoria, MANTENDO ordem original
+  const grupos = []; // [{cat, itens:[]}]
+  const idx = {};
+  itens.forEach(it => {
+    // filtro de busca: nome OU categoria match (sem acento)
+    if(busca && !semAcento(it.nome).includes(busca) && !semAcento(it.cat).includes(busca)) return;
+    if(idx[it.cat] === undefined) {
+      idx[it.cat] = grupos.length;
+      grupos.push({cat: it.cat, itens: []});
+    }
+    grupos[idx[it.cat]].itens.push(it);
+  });
+
+  // Se está buscando, abre TODAS as categorias que têm resultado (automático)
+  if(busca) {
+    if(!categoriasAbertas[setorAtual]) categoriasAbertas[setorAtual] = new Set();
+    grupos.forEach(g => categoriasAbertas[setorAtual].add(g.cat));
+  }
+
+  let html = '';
+  grupos.forEach(g => {
+    // Quantas qtds tem nesse grupo (badge verde)
+    let qtdGrupo = 0;
+    g.itens.forEach(it => { if((pedidoAtual[it.nome]||0) > 0) qtdGrupo++; });
+
+    const aberto = isCatAberta(setorAtual, g.cat) || !!busca;
+    const setorEsc = setorAtual.replace(/'/g,"\\'");
+    const catEsc = g.cat.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+
+    html += `<button class="cat-sep ${aberto?'aberto':''}" onclick="toggleCat('${setorEsc}','${catEsc}')">
+      <span class="cat-titulo">
+        ${qtdGrupo>0?`<span class="cat-badge">${qtdGrupo}</span>`:''}
+        ${g.cat}
+        <span class="cat-count">· ${g.itens.length}</span>
+      </span>
+      <span class="cat-seta">▶</span>
+    </button>`;
+
+    html += `<div class="cat-grupo ${aberto?'aberto':''}">`;
+    g.itens.forEach(item => {
+      const qtd = pedidoAtual[item.nome] || 0;
+      html += `
+      <div class="item-row ${qtd>0?'tem-qtd':''}" id="row-${sanitize(item.nome)}">
+        <div class="item-info">
+          <div class="item-nome">${item.nome}</div>
+          <div class="item-unid">${item.unid}</div>
+        </div>
+        <div class="qtd-ctrl">
+          <button class="q-btn" onclick="alterarQtd('${item.nome.replace(/'/g,"\\'")}',-1)">−</button>
+          <input class="q-inp ${qtd>0?'ativo':''}" type="number" inputmode="numeric"
+            value="${qtd||''}" placeholder="0" min="0"
+            onchange="setQtd('${item.nome.replace(/'/g,"\\'")}',this.value)" onfocus="this.select()">
+          <button class="q-btn" onclick="alterarQtd('${item.nome.replace(/'/g,"\\'")}',1)">+</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  if(!html) html = '<div class="empty-state"><div class="ei">🔍</div>Nenhum item encontrado</div>';
+  document.getElementById('req-lista').innerHTML = html;
+  atualizarResumo();
+}
+
+function sanitize(s) { return s.replace(/[^a-zA-Z0-9]/g,'_'); }
+
+function alterarQtd(nome, delta) {
+  const n = Math.max(0, (pedidoAtual[nome]||0) + delta);
+  if(n === 0) delete pedidoAtual[nome]; else pedidoAtual[nome] = n;
+  renderReq();
+}
+function setQtd(nome, val) {
+  const n = parseInt(val)||0;
+  if(n <= 0) delete pedidoAtual[nome]; else pedidoAtual[nome] = n;
+  atualizarResumo();
+}
+
+function atualizarResumo() {
+  const n = Object.keys(pedidoAtual).length;
+  const bar = document.getElementById('req-resumo');
+  document.getElementById('req-count-txt').textContent = n + (n===1?' item':' itens');
+  bar.classList.toggle('show', n > 0);
+}
+
+// ═══════════════════════════════════════════════════
+// MODAL CONFIRMAÇÃO
+// ═══════════════════════════════════════════════════
+function abrirModalConf() {
+  const cfg = SETOR_CFG[setorAtual];
+  const itens = Object.entries(pedidoAtual);
+  document.getElementById('mc-titulo').textContent = cfg.icone + ' ' + cfg.nome;
+  document.getElementById('mc-sub').textContent = lojaAtual + ' · ' + horaAgora() + ' · ' + itens.length + ' itens';
+  if(!itens.length) {
+    document.getElementById('mc-lista').innerHTML = '<p style="color:var(--texto2);text-align:center;padding:20px">Adicione itens antes de enviar.</p>';
+  } else {
+    document.getElementById('mc-lista').innerHTML = itens.map(([nome,qtd]) =>
+      `<div class="m-item"><div class="m-item-nome">${nome}</div><div class="m-item-qtd">${qtd}</div></div>`
+    ).join('');
+  }
+  document.getElementById('modal-conf').classList.add('open');
+}
+
+async function enviarRequisicao() {
+  const itens = Object.entries(pedidoAtual);
+  if(!itens.length) return;
+  fecharOverlay('modal-conf');
+  mostrarLoading('Enviando requisição...');
+
+  const cfg = SETOR_CFG[setorAtual];
+  const req = {
+    id: Date.now(),
+    loja: lojaAtual,
+    setor: setorAtual,
+    setorNome: cfg.nome,
+    setorIcone: cfg.icone,
+    data: hoje(),
+    hora: horaAgora(),
+    status: 'pendente',
+    itens: itens.map(([nome,qtd]) => ({
+      nome, qtd_pedida: qtd, qtd_entregue: qtd, status: 'pendente'
+    }))
+  };
+
+  ultimoReqId = req.id;
+  await salvarReq(req);
+  esconderLoading();
+
+  // Vai para tela de acompanhamento
+  const hdr = document.getElementById('alert-hdr');
+  hdr.style.background = cfg.cor;
+  document.getElementById('alert-sub').textContent = cfg.nome + ' · ' + horaAgora();
+  carregarAlertas();
+  abrirTela('tela-alertas');
+  // Polling leve só na tela de acompanhamento (aguardando estoquista)
+  pollingInterval = setInterval(carregarAlertas, 8000);
+}
+
+// ═══════════════════════════════════════════════════
+// TELA ALERTAS — setor acompanha status do pedido
+// ═══════════════════════════════════════════════════
+// Controle para não tocar o som mais de uma vez
+let alertaJaDisparado = false;
+
+function tocarSom() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Toca 3 bipes
+    [0, 0.3, 0.6].forEach(delay => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.5, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.25);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + 0.25);
+    });
+  } catch(e) { console.log('Som não disponível:', e); }
+}
+
+function mostrarAlertaConfirmacao(req) {
+  const cfg = SETOR_CFG[req.setor] || {icone:'📦', nome:req.setor || 'Setor antigo', cor:'#666'};
+  document.getElementById('alerta-icon').textContent = cfg.icone;
+  
+  const temFalta = req.itens.some(i => i.status === 'falta' || i.status === 'parcial');
+  document.getElementById('alerta-titulo').textContent = temFalta ? '⚠️ Pedido com faltas!' : '✅ Pedido entregue!';
+  document.getElementById('alerta-sub').textContent = 
+    temFalta ? 'Alguns itens não estavam disponíveis no estoque.' : 'Todos os itens foram separados com sucesso.';
+  
+  document.getElementById('alerta-itens').innerHTML = req.itens.map(function(it) {
+    var stClass = it.status==='falta' ? 'status-falta' : it.status==='parcial' ? 'status-parc' : 'status-ok';
+    var stTxt = it.status==='falta' ? '🔴 Sem estoque' : it.status==='parcial' ? '🟡 ' + it.qtd_entregue + '/' + it.qtd_pedida : '✅ ' + it.qtd_entregue;
+    return '<div class="alerta-item-row">' +
+      '<div class="alerta-item-nome">' + it.nome + '</div>' +
+      '<div class="alerta-item-status ' + stClass + '">' + stTxt + '</div>' +
+      '</div>';
+  }).join('');
+  
+  document.getElementById('alerta-confirm').classList.add('show');
+  tocarSom();
+}
+
+function fecharAlerta() {
+  document.getElementById('alerta-confirm').classList.remove('show');
+  stopPolling(); // para o polling ao fechar o alerta
+}
+
+async function carregarAlertas() {
+  if(!ultimoReqId) return;
+  const lista = await lerDados();
+  const req = lista.find(r => r.id === ultimoReqId);
+  const el = document.getElementById('alertas-lista');
+
+  if(!req) {
+    el.innerHTML = '<div class="empty-state"><div class="ei">⏳</div>Aguardando estoquista...</div>';
+    return;
+  }
+
+  document.getElementById('alert-sub').textContent =
+    req.setorNome + ' · ' + req.hora + ' · ' + (req.status === 'pendente' ? '⏳ Aguardando' : '✅ Respondido');
+  
+  // Dispara alarme quando estoquista confirmar (só uma vez)
+  if(req.status === 'confirmado' && !alertaJaDisparado) {
+    alertaJaDisparado = true;
+    stopPolling();
+    mostrarAlertaConfirmacao(req);
+  }
+
+  let html = '';
+
+  if(req.status === 'pendente') {
+    html += `<div class="alerta-card" style="background:var(--amar-bg);border-left:4px solid var(--amar);margin:12px">
+      <div class="alerta-titulo">⏳ Aguardando o estoquista...</div>
+      <div style="font-size:13px;color:var(--texto2);margin-top:4px">Seu pedido foi recebido. O estoquista irá separar e confirmar em breve.</div>
+    </div>`;
+  }
+
+  // Itens entregues OK
+  const ok = req.itens.filter(i => i.status === 'ok' || (i.status === 'confirmado' && i.qtd_entregue >= i.qtd_pedida));
+  const parcial = req.itens.filter(i => i.status === 'parcial');
+  const falta = req.itens.filter(i => i.status === 'falta');
+  const pendentes = req.itens.filter(i => i.status === 'pendente');
+
+  if(falta.length) {
+    html += `<div class="alerta-card alerta-falta" style="margin:8px 12px">
+      <div class="alerta-titulo">🔴 Itens em FALTA total — não tem no estoque</div>
+      ${falta.map(i => `<div class="alerta-item"><span>${i.nome}</span><span>Pediu ${i.qtd_pedida} · Tem 0</span></div>`).join('')}
+    </div>`;
+  }
+  if(parcial.length) {
+    html += `<div class="alerta-card alerta-parcial" style="margin:8px 12px">
+      <div class="alerta-titulo">🟡 Itens entregues PARCIALMENTE</div>
+      ${parcial.map(i => `<div class="alerta-item"><span>${i.nome}</span><span>Pediu ${i.qtd_pedida} · Recebeu ${i.qtd_entregue}</span></div>`).join('')}
+    </div>`;
+  }
+  if(ok.length && req.status !== 'pendente') {
+    html += `<div class="alerta-card alerta-ok" style="margin:8px 12px">
+      <div class="alerta-titulo">✅ Entregues completos</div>
+      ${ok.map(i => `<div class="alerta-item"><span>${i.nome}</span><span>${i.qtd_entregue} ${ITENS[req.setor]?.find(x=>x.nome===i.nome)?.unid||''}</span></div>`).join('')}
+    </div>`;
+  }
+  if(pendentes.length && req.status !== 'pendente') {
+    html += `<div class="alerta-card" style="background:var(--cinza);border-left:4px solid var(--borda);margin:8px 12px">
+      <div class="alerta-titulo" style="color:var(--texto2)">⬜ Ainda pendentes</div>
+      ${pendentes.map(i => `<div class="alerta-item" style="color:var(--texto2)"><span>${i.nome}</span><span>${i.qtd_pedida}</span></div>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML = html || '<div class="empty-state"><div class="ei">📋</div>Processando...</div>';
+}
+
+// ═══════════════════════════════════════════════════
+// TELA ESTOQUISTA
+// ═══════════════════════════════════════════════════
+function setEstoqTab(tab, btn) {
+  estoqTab = tab;
+  document.querySelectorAll('.estoq-tab').forEach(function(b){ b.classList.remove('ativo'); });
+  btn.classList.add('ativo');
+  carregarPedidos(true);
+}
+
+// Rastreia qual pedido está sendo editado agora
+let pedidoEmEdicao = null;
+
+async function carregarPedidos(forcar) {
+  // Se está editando e não forçou, não rerenderiza
+  if(pedidoEmEdicao && !forcar) {
+    document.getElementById('estoq-sub').textContent = hoje() + ' · ✏️ editando pedido...';
+    return;
+  }
+  try {
+    // Busca todos e filtra por loja + hoje
+    const todos = await lerTodos();
+    const h = hoje();
+    const lista = todos.filter(function(r) { return r.loja === lojaAtual && r.data === h; });
+    renderPedidos(lista);
+    var pend = lista.filter(function(r){return r.status==='pendente';}).length;
+    document.getElementById('estoq-sub').textContent =
+      h + ' · ' + pend + ' pendente(s) · ' + lista.length + ' total';
+  } catch(e) {
+    document.getElementById('estoq-sub').textContent = 'Erro ao carregar — tente novamente';
+    console.error('carregarPedidos erro:', e);
+  }
+}
+
+function renderPedidos(lista) {
+  let filtrada = lista;
+  if(estoqTab === 'pendentes') filtrada = lista.filter(r=>r.status==='pendente');
+  if(estoqTab === 'confirmados') filtrada = lista.filter(r=>r.status==='confirmado');
+
+  const el = document.getElementById('estoq-lista');
+  if(!filtrada.length) {
+    el.innerHTML = `<div class="empty-state"><div class="ei">${estoqTab==='pendentes'?'✅':'📋'}</div>${estoqTab==='pendentes'?'Nenhum pedido pendente!':'Sem registros.'}</div>`;
+    return;
+  }
+
+  // Usa fragment para evitar problemas de re-render
+  var fragment = '';
+  for(var pi = 0; pi < filtrada.length; pi++) {
+    var req = filtrada[pi];
+    var sClass = req.status==='pendente' ? 'pill-pend' : 'pill-conf';
+    var sTxt   = req.status==='pendente' ? '🟡 Pendente' : '✅ Confirmado';
+    var itHTML = '';
+    
+    for(var ii = 0; ii < req.itens.length; ii++) {
+      var it = req.itens[ii];
+      var eHTML = '';
+      if(req.status === 'pendente') {
+        var eid = 'ei-' + req.id + '-' + ii;
+        var fid = 'fl-' + req.id + '-' + ii;
+        var cbk = 'atualizarEntregaLocal(' + req.id + ',' + ii + ',this.value)';
+        eHTML  = '<div style="display:flex;flex-direction:column;align-items:center">';
+        eHTML += '<input id="' + eid + '" type="number" inputmode="numeric" value=""';
+        eHTML += ' placeholder="' + it.qtd_pedida + '" min="0" autocomplete="off"';
+        eHTML += ' style="width:60px;height:40px;border:2px solid #40916C;border-radius:8px;';
+        eHTML += 'text-align:center;font-size:18px;font-weight:700;color:#1A3A2A;background:#fff;"';
+        eHTML += ' oninput="' + cbk + '" onchange="' + cbk + '">';
+        eHTML += '<div id="' + fid + '" style="display:none;font-size:10px;color:#C62828;font-weight:700">FALTA</div>';
+        eHTML += '</div>';
+      } else {
+        var cor = getCorStatus(it.status);
+        var emj = it.status==='falta'?' 🔴':it.status==='parcial'?' 🟡':' ✅';
+        eHTML = '<span style="font-weight:700;color:'+cor+'">' + it.qtd_entregue + emj + '</span>';
+      }
+      itHTML += '<div class="ped-item">';
+      itHTML += '<div class="ped-item-nome">' + it.nome + '</div>';
+      itHTML += '<span class="ped-pedido">' + it.qtd_pedida + '</span>';
+      itHTML += '<span class="seta">→</span>';
+      itHTML += eHTML;
+      itHTML += '</div>';
+    }
+    
+    var fHTML = '';
+    if(req.status === 'pendente') {
+      fHTML = '<div class="ped-footer">';
+      fHTML += '<button class="btn-confirmar-ped" onclick="confirmarEntrega(' + req.id + ')">';
+      fHTML += '✅ Confirmar entrega</button></div>';
+    }
+    
+    fragment += '<div class="pedido-card" id="pc-' + req.id + '">';
+    fragment += '<div class="ped-hdr">';
+    fragment += '<div class="ped-info">';
+    fragment += '<div class="ped-icon">' + req.setorIcone + '</div>';
+    fragment += '<div><div class="ped-nome">' + req.setorNome + '</div>';
+    fragment += '<div class="ped-meta">' + req.hora + ' · ' + req.itens.length + ' itens · ' + req.loja + '</div></div>';
+    fragment += '</div>';
+    fragment += '<div class="status-pill ' + sClass + '">' + sTxt + '</div>';
+    fragment += '</div>';
+    fragment += '<div class="ped-itens">' + itHTML + '</div>';
+    fragment += fHTML;
+    fragment += '</div>';
+  }
+  el.innerHTML = fragment;
+}
+
+function getCorStatus(s) {
+  if(s==='falta') return 'var(--verm)';
+  if(s==='parcial') return 'var(--amar)';
+  return 'var(--verde-c)';
+}
+
+function atualizarEntrega(reqId, itemIdx, val) {
+  atualizarEntregaLocal(reqId, itemIdx, val);
+}
+
+// Armazena edições locais dos inputs antes de confirmar
+const entregasLocais = {};
+
+function atualizarEntregaLocal(reqId, itemIdx, val) {
+  // Para o polling enquanto está editando
+  pedidoEmEdicao = reqId;
+  const key = reqId + '_' + itemIdx;
+  entregasLocais[key] = parseInt(val) || 0;
+  
+  // Atualiza visual
+  const inp = document.getElementById(`ei-${reqId}-${itemIdx}`);
+  const fl = document.getElementById(`fl-${reqId}-${itemIdx}`);
+  const v = parseInt(val) || 0;
+  
+  // Busca qtd pedida do objeto em memória
+  const pedCard = document.getElementById(`pc-${reqId}`);
+  if(!pedCard) return;
+  const pedidoSpan = pedCard.querySelectorAll('.ped-pedido')[itemIdx];
+  const qtdPed = parseInt(pedidoSpan?.textContent) || 0;
+  
+  if(inp) {
+    if(v === 0 || v < qtdPed) {
+      inp.classList.add('falta');
+    } else {
+      inp.classList.remove('falta');
+    }
+  }
+  if(fl) {
+    fl.style.display = (v === 0) ? 'block' : 'none';
+  }
+}
+
+async function confirmarEntrega(reqId) {
+  pedidoEmEdicao = null;
+  mostrarLoading('Confirmando entrega...');
+  console.log('[confirmarEntrega] iniciando id=', reqId);
+
+  try {
+    reqId = Number(reqId);
+
+    // Lê dados frescos (com fallback pro cache)
+    var todos = await lerTodos();
+    var req = todos.find(function(r) { return Number(r.id) === reqId; });
+
+    // Se sumiu da lista do servidor, busca no cache local
+    if(!req) {
+      var cacheLocal = cacheLer();
+      req = cacheLocal.find(function(r){ return Number(r.id) === reqId; });
+    }
+
+    if(!req) {
+      esconderLoading();
+      alert('Pedido não encontrado. Toque 🔄 para atualizar.');
+      return;
+    }
+
+    // Calcula quantidades a partir do que o estoquista digitou
+    req.itens.forEach(function(it, i) {
+      var key = reqId + '_' + i;
+      var v;
+
+      if(entregasLocais[key] !== undefined) {
+        v = entregasLocais[key];
+      } else {
+        var inp = document.getElementById('ei-' + reqId + '-' + i);
+        if(inp) {
+          v = parseInt(inp.value);
+          if(isNaN(v)) v = it.qtd_pedida;
+        } else {
+          v = it.qtd_pedida;
+        }
+      }
+
+      it.qtd_entregue = v;
+      if(v === 0) it.status = 'falta';
+      else if(v < it.qtd_pedida) it.status = 'parcial';
+      else it.status = 'ok';
+
+      delete entregasLocais[key];
+    });
+
+    req.status = 'confirmado';
+    req.hora_confirmacao = horaAgora();
+
+    console.log('[confirmarEntrega] gravando id=', reqId, 'status=confirmado');
+    await atualizarReq(reqId, req);
+    console.log('[confirmarEntrega] OK');
+
+    esconderLoading();
+    // Força recarregar do servidor pra refletir nas abas
+    await carregarPedidos(true);
+  } catch(e) {
+    esconderLoading();
+    console.error('[confirmarEntrega] erro inesperado:', e);
+    // Mesmo no erro, recarrega — o cache local já tem a confirmação
+    try { await carregarPedidos(true); } catch(_) {}
+    alert('Houve um problema ao sincronizar com o servidor, mas a confirmação foi salva localmente. Toque 🔄 para atualizar.');
+  }
+}
+
+
+// ═══════════════════════════════════════════════════
+// MOVIMENTAÇÕES — Entrada, Transferência, Clube 17
+// ═══════════════════════════════════════════════════
+
+// Consolida todos os itens de todos os setores numa lista única
+var TODOS_ITENS_MOV = [];
+(function(){
+  var vistos = {};
+  Object.keys(ITENS).forEach(function(setor){
+    ITENS[setor].forEach(function(item){
+      var chave = item.nome.toUpperCase();
+      if(!vistos[chave]){
+        vistos[chave] = true;
+        TODOS_ITENS_MOV.push({cat: item.cat, nome: item.nome, unid: item.unid || 'unid'});
+      }
+    });
+  });
+  TODOS_ITENS_MOV.sort(function(a,b){
+    var c = (a.cat||'').localeCompare(b.cat||'');
+    return c !== 0 ? c : a.nome.localeCompare(b.nome);
+  });
+})();
+
+// Estado em memória: {entrada: {nome: qtd}, transferencia: {...}, clube17: {...}}
+var movDados = {entrada:{}, transferencia:{}, clube17:{}};
+var transfDestino = ''; // 'RECIFE', 'JAQUEIRA' ou 'CLUBE_17' (escolhido pelo usuário)
+
+function setTransfDestino(dest){
+  transfDestino = dest;
+  // Atualiza visual dos botões
+  document.querySelectorAll('#transf-destinos button').forEach(function(b){
+    if(b.dataset.dest === dest){
+      b.style.background = '#6A1B9A'; b.style.color = '#fff'; b.style.borderColor = '#6A1B9A';
+      b.style.borderStyle = 'solid'; b.style.boxShadow = '0 2px 8px rgba(106,27,154,.4)';
+      b.innerHTML = '✅ ' + b.innerHTML.replace('👉 ', '').replace('✅ ', '');
+    } else {
+      b.style.background = '#F3E5F5'; b.style.color = '#6A1B9A'; b.style.borderColor = '#6A1B9A';
+      b.style.borderStyle = 'dashed'; b.style.boxShadow = '';
+      b.innerHTML = '👉 ' + b.innerHTML.replace('✅ ', '').replace('👉 ', '');
+    }
+  });
+  var sub = document.getElementById('transf-sub');
+  var origem = lojaAtual === 'JAQUEIRA' ? 'Jaqueira' : 'Recife Antigo';
+  var nomeDest = dest === 'JAQUEIRA' ? 'Jaqueira' : dest === 'RECIFE' ? 'Recife Antigo' : dest === 'CLUBE_17' ? 'Clube 17' : '...';
+  sub.textContent = origem + ' → ' + nomeDest;
+}
+
+function montarDestinosTransf(){
+  // Mostra só os destinos diferentes da loja atual
+  var destinos = [];
+  if(lojaAtual === 'JAQUEIRA'){
+    destinos = [
+      {id:'RECIFE', label:'🏪 Recife Antigo'},
+      {id:'CLUBE_17', label:'🏢 Clube 17'}
+    ];
+  } else {
+    destinos = [
+      {id:'JAQUEIRA', label:'🏠 Jaqueira'},
+      {id:'CLUBE_17', label:'🏢 Clube 17'}
+    ];
+  }
+  var wrap = document.getElementById('transf-destinos');
+  wrap.innerHTML = destinos.map(function(d){
+    return '<button data-dest="' + d.id + '" onclick="setTransfDestino(\'' + d.id + '\')" ' +
+      'style="flex:1;padding:14px 6px;border:2px dashed #6A1B9A;border-radius:10px;background:#F3E5F5;color:#6A1B9A;font-size:13px;font-weight:700;cursor:pointer">' +
+      '👉 ' + d.label + '</button>';
+  }).join('');
+  transfDestino = '';
+  document.getElementById('transf-sub').textContent = 'Selecione o destino';
+}
+
+function abrirMovimento(tipo){
+  if(!movDados[tipo]) movDados[tipo] = {};
+  var buscaId = tipo === 'transferencia' ? 'transf-busca' : (tipo + '-busca');
+  var b = document.getElementById(buscaId);
+  if(b) b.value = '';
+  if(tipo === 'transferencia') montarDestinosTransf();
+  renderMovimento(tipo);
+  abrirTela('tela-' + tipo);
+}
+
+function renderMovimento(tipo){
+  var buscaId = tipo === 'transferencia' ? 'transf-busca' : (tipo + '-busca');
+  var listaId = tipo + '-lista';
+  var busca = (document.getElementById(buscaId)?.value || '').toLowerCase().trim();
+  var dados = movDados[tipo] || {};
+
+  var filtrados = TODOS_ITENS_MOV.filter(function(it){
+    return !busca || it.nome.toLowerCase().includes(busca) || (it.cat||'').toLowerCase().includes(busca);
+  });
+
+  var htmlOut = '';
+  var catAtual = '';
+  filtrados.forEach(function(it){
+    if(it.cat !== catAtual){
+      catAtual = it.cat;
+      htmlOut += '<div style="font-size:11px;font-weight:700;color:var(--texto2);text-transform:uppercase;letter-spacing:.06em;padding:10px 14px 4px;background:#f5f7fa">' + (catAtual || '') + '</div>';
+    }
+    var qtd = dados[it.nome] || 0;
+    var idSafe = sanitize(it.nome) + '_' + tipo;
+    htmlOut += '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--borda);background:#fff">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--texto);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + it.nome + '</div>' +
+        '<div style="font-size:11px;color:var(--texto2)">' + it.unid + '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">' +
+        '<button onclick="alterarMovQtd(\'' + tipo + '\',\'' + it.nome.replace(/\'/g,"\\'") + '\',-1)" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--borda);background:#fff;font-size:18px;font-weight:700;cursor:pointer">−</button>' +
+        '<input type="number" inputmode="numeric" id="mov_' + idSafe + '" value="' + qtd + '" min="0" onchange="setMovQtd(\'' + tipo + '\',\'' + it.nome.replace(/\'/g,"\\'") + '\',this.value)" style="width:48px;text-align:center;padding:6px 4px;border:1.5px solid var(--borda);border-radius:8px;font-size:14px;font-weight:700">' +
+        '<button onclick="alterarMovQtd(\'' + tipo + '\',\'' + it.nome.replace(/\'/g,"\\'") + '\',1)" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--borda);background:#fff;font-size:18px;font-weight:700;cursor:pointer">+</button>' +
+      '</div>' +
+    '</div>';
+  });
+
+  document.getElementById(listaId).innerHTML = htmlOut || '<div style="padding:40px 20px;text-align:center;color:var(--texto2);font-size:14px">Nenhum item encontrado</div>';
+
+  atualizarResumoMov(tipo);
+}
+
+function alterarMovQtd(tipo, nome, delta){
+  var atual = movDados[tipo][nome] || 0;
+  var novo = Math.max(0, atual + delta);
+  if(novo === 0) delete movDados[tipo][nome];
+  else movDados[tipo][nome] = novo;
+  var idSafe = sanitize(nome) + '_' + tipo;
+  var inp = document.getElementById('mov_' + idSafe);
+  if(inp) inp.value = novo;
+  atualizarResumoMov(tipo);
+}
+
+function setMovQtd(tipo, nome, val){
+  var n = parseInt(val) || 0;
+  if(n <= 0) delete movDados[tipo][nome];
+  else movDados[tipo][nome] = n;
+  atualizarResumoMov(tipo);
+}
+
+function atualizarResumoMov(tipo){
+  var dados = movDados[tipo] || {};
+  var nItens = Object.keys(dados).length;
+  var elCount = document.getElementById(tipo + '-count');
+  if(elCount) elCount.textContent = nItens + ' iten' + (nItens === 1 ? '' : 's');
+  // Mostra/esconde a barra flutuante (e libera o botão atrás dela)
+  var bar = document.getElementById(tipo + '-resumo');
+  if(bar) bar.classList.toggle('show', nItens > 0);
+}
+
+async function confirmarMovimento(tipo){
+  var dados = movDados[tipo] || {};
+  var nomes = Object.keys(dados);
+  if(nomes.length === 0){
+    alert('Adicione pelo menos 1 item antes de confirmar.');
+    return;
+  }
+
+  var TIPO_LABEL = {entrada:'ENTRADA', transferencia:'TRANSFERENCIA', clube17:'SAIDA_CLUBE17'};
+  var TIPO_NOME = {entrada:'Entrada de mercadoria', transferencia:'Transferência', clube17:'Saída Clube 17'};
+  var TIPO_ICONE = {entrada:'📥', transferencia:'🔄', clube17:'🏢'};
+
+  var origem = lojaAtual;
+  var destino = '';
+  var nomeMov = TIPO_NOME[tipo];
+  if(tipo === 'transferencia'){
+    if(!transfDestino){
+      alert('⚠️ ATENÇÃO!\n\nVocê precisa escolher o DESTINO da transferência ANTES de confirmar.\n\nLá no topo da tela, toque em UM dos botões:\n→ 🏪 Recife Antigo\n→ 🏢 Clube 17');
+      // Destacar visualmente os botões de destino piscando
+      try {
+        var btns = document.querySelectorAll('#transf-destinos button');
+        btns.forEach(function(b){
+          b.style.transition = 'all .3s';
+          b.style.boxShadow = '0 0 0 4px #ff0';
+          setTimeout(function(){ b.style.boxShadow = ''; }, 2000);
+        });
+      } catch(eAviso){}
+      return;
+    }
+    destino = transfDestino;
+    var destNm = destino === 'JAQUEIRA' ? 'Jaqueira' : destino === 'RECIFE' ? 'Recife' : 'Clube 17';
+    nomeMov = 'Transferência → ' + destNm;
+  } else if(tipo === 'clube17'){
+    destino = 'CLUBE_17';
+  }
+
+  var movimento = {
+    id: Date.now() + Math.floor(Math.random()*1000),
+    tipo_registro: 'MOVIMENTO',
+    tipo_mov: TIPO_LABEL[tipo],
+    loja: lojaAtual,
+    origem: origem,
+    destino: destino,
+    data: hoje(),
+    hora: horaAgora(),
+    status: 'confirmado',
+    // Campos pra aparecer na lista igual um pedido normal:
+    setorNome: nomeMov,
+    setorIcone: TIPO_ICONE[tipo],
+    itens: nomes.map(function(nm){
+      var it = TODOS_ITENS_MOV.find(function(x){ return x.nome === nm; });
+      var q = dados[nm];
+      return {
+        nome: nm,
+        qtd: q,
+        qtd_pedida: q,
+        qtd_entregue: q,
+        status: 'ok',
+        unid: it ? it.unid : 'unid',
+        cat: it ? it.cat : ''
+      };
+    })
+  };
+
+  console.log('[confirmarMovimento]', tipo, 'iniciando', movimento);
+
+  // 1. SALVA NO CACHE LOCAL JÁ (instantâneo) — antes de qualquer await
+  try {
+    var cache = cacheLer();
+    cache.push(movimento);
+    cacheSalvar(cache);
+    filaAdicionar(movimento);
+    console.log('[confirmarMovimento] salvou no cache local OK');
+  } catch(eCache){
+    console.error('[confirmarMovimento] erro no cache:', eCache);
+    alert('❌ Erro ao salvar no celular: ' + eCache.message);
+    return;
+  }
+
+  // 2. LIMPA ESTADO
+  movDados[tipo] = {};
+
+  // 3. MOSTRA MENSAGEM DE SUCESSO IMEDIATAMENTE (não espera servidor)
+  var total = movimento.itens.reduce(function(s,i){return s+i.qtd;}, 0);
+  alert('✅ ' + TIPO_NOME[tipo] + ' registrada!\n\n' + nomes.length + ' iten(s) · total ' + total + ' unidade(s)' + (destino ? '\nDestino: ' + destino.replace('_',' ') : ''));
+
+  // 4. VOLTA PRA TELA DO ESTOQUISTA
+  abrirTela('tela-estoquista');
+
+  // 5. TENTA SINCRONIZAR EM SEGUNDO PLANO (sem await — não trava nada)
+  (async function(){
+    try {
+      var todos = await lerTodos();
+      if(!todos.some(function(r){ return r.id === movimento.id; })) todos.push(movimento);
+      await Promise.race([
+        fetch(BIN_URL, {method:'PUT', headers:HEADERS, body: JSON.stringify({requisicoes: todos})}),
+        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout sync')); }, 8000); })
+      ]);
+      filaLimpar();
+      console.log('[confirmarMovimento] sincronizou com servidor OK');
+    } catch(eSync){
+      console.warn('[confirmarMovimento] não sincronizou (cache mantém os dados):', eSync.message);
+    }
+  })();
+}
+
+async function exportarCSVDia() {
+  const lista = await lerDados();
+  const confirmadas = lista.filter(r => r.status === 'confirmado' && r.tipo_registro !== 'MOVIMENTO');
+  const movimentos = lista.filter(r => r.tipo_registro === 'MOVIMENTO');
+  if(!confirmadas.length && !movimentos.length) { alert('Nenhum registro confirmado hoje.'); return; }
+
+  let csv = 'LOJA,DATA,HORA,ORIGEM,DESTINO,SETOR,ITEM,UNIDADE,QTD_PEDIDA,QTD_ENTREGUE,STATUS,TIPO\n';
+
+  // Requisições normais (SAIDA pela cozinha/setor)
+  confirmadas.forEach(req => {
+    req.itens.forEach(it => {
+      const st = it.status==='falta'?'SEM_ESTOQUE':it.status==='parcial'?'FALTA_PARCIAL':'OK';
+      csv += `${req.loja},${req.data},${req.hora},${req.loja},${req.loja},"${req.setorNome}","${it.nome}","${it.unid||''}",${it.qtd_pedida},${it.qtd_entregue},${st},SAIDA_REQUISICAO\n`;
+    });
+  });
+
+  // Movimentos (Entrada, Transferência, Saída Clube 17)
+  movimentos.forEach(m => {
+    m.itens.forEach(it => {
+      csv += `${m.loja},${m.data},${m.hora},${m.origem||''},${m.destino||''},"MOVIMENTO","${it.nome}","${it.unid||''}",${it.qtd},${it.qtd},OK,${m.tipo_mov}\n`;
+    });
+  });
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `requisicoes_${lojaAtual}_${hoje().replace(/\//g,'-')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════
+// HOME — badges
+// ═══════════════════════════════════════════════════
+async function atualizarHome() {
+  carregarHistorico();
+  const lista = await lerDados();
+  const pendentes = lista.filter(r=>r.status==='pendente' && r.tipo_registro !== 'MOVIMENTO');
+
+  Object.keys(SETOR_CFG).forEach(function(s) {
+    var n = lista.filter(function(r){return r.setor===s;}).length;
+    var el = document.getElementById('badge-'+s);
+    if(el) el.textContent = n > 0 ? n+' pedido'+(n>1?'s':'')+' hoje' : 'Nenhum pedido hoje';
+  });
+
+  const ep = document.getElementById('badge-estoq');
+  if(ep) {
+    if(pendentes.length > 0) {
+      ep.textContent = '🔔 '+pendentes.length+' pendente'+(pendentes.length>1?'s':'');
+      ep.classList.add('alert');
+    } else {
+      ep.textContent = lista.length+' requisição'+(lista.length!==1?'ões':'')+' hoje';
+      ep.classList.remove('alert');
+    }
+  }
+}
+
+// Polling removido — usa botão manual para atualizar
+function startPolling(fn) { /* desativado */ }
+function stopPolling() {
+  if(pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function novoPedido() { stopPolling(); abrirSetor(setorAtual || 'bar'); }
+function mostrarLoading(txt) {
+  document.getElementById('loading-txt').textContent = txt;
+  document.getElementById('loading').classList.add('show');
+}
+function esconderLoading() { document.getElementById('loading').classList.remove('show'); }
+function fecharOverlay(id, e) {
+  if(!e || e.target === document.getElementById(id))
+    document.getElementById(id).classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════
+// HISTÓRICO DE FALTAS
+// ═══════════════════════════════════════════════════
+let histTab = 'hoje';
+
+function setHistTab(tab, btn) {
+  histTab = tab;
+  document.querySelectorAll('.estoq-tab').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  carregarHistorico();
+}
+
+async function carregarHistorico() {
+  const todos = await lerTodos();
+  const confirmadas = todos.filter(r => r.status === 'confirmado');
+  
+  // Filtra por período
+  const agora = new Date();
+  let filtradas = confirmadas;
+  if(histTab === 'hoje') {
+    filtradas = confirmadas.filter(r => r.data === hoje());
+  } else if(histTab === 'semana') {
+    filtradas = confirmadas.filter(r => {
+      const partes = r.data.split('/');
+      const data = new Date(partes[2], partes[1]-1, partes[0]);
+      const diff = (agora - data) / (1000*60*60*24);
+      return diff <= 7;
+    });
+  }
+  
+  // Pega só os que têm faltas
+  const comFaltas = filtradas.filter(r => 
+    r.itens.some(i => i.status === 'falta' || i.status === 'parcial')
+  );
+  
+  const el = document.getElementById('hist-lista');
+  document.getElementById('hist-sub').textContent = 
+    comFaltas.length + ' registro(s) com falta · ' + filtradas.length + ' total';
+  
+  // Badge na home
+  const bf = document.getElementById('badge-faltas');
+  if(bf) {
+    const hojeFaltas = confirmadas.filter(r => r.data === hoje() && r.itens.some(i => i.status === 'falta' || i.status === 'parcial'));
+    bf.textContent = hojeFaltas.length > 0 ? hojeFaltas.length + ' falta(s) hoje 🔴' : 'Nenhuma falta hoje ✅';
+    bf.style.background = hojeFaltas.length > 0 ? 'rgba(198,40,40,.3)' : 'rgba(64,145,108,.3)';
+  }
+  
+  if(!comFaltas.length) {
+    el.innerHTML = `<div class="empty-state"><div class="ei">✅</div>Nenhuma falta registrada${histTab==='hoje'?' hoje':histTab==='semana'?' essa semana':''}!</div>`;
+    return;
+  }
+  
+  el.innerHTML = comFaltas.map(function(req) {
+    var itFaltaHTML = req.itens.filter(function(i) {
+      return i.status === 'falta' || i.status === 'parcial';
+    }).map(function(it) {
+      var pillClass = it.status === 'falta' ? 'pill-falta-total' : 'pill-falta-parc';
+      var pillTxt = it.status === 'falta' ? '🔴 Sem estoque' : '🟡 Entregue ' + it.qtd_entregue + '/' + it.qtd_pedida;
+      return '<div class="falta-item">' +
+        '<div class="falta-item-nome">' + it.nome + '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">' +
+          '<span class="falta-pill ' + pillClass + '">' + pillTxt + '</span>' +
+        '</div></div>';
+    }).join('');
+    return '<div class="falta-hist-card">' +
+      '<div class="falta-hist-hdr"><div>' +
+        '<div class="falta-hist-titulo">' + req.setorIcone + ' ' + req.setorNome + '</div>' +
+        '<div class="falta-hist-meta">' + req.data + ' · ' + req.hora + ' · ' + req.loja + '</div>' +
+      '</div></div>' + itFaltaHTML + '</div>';
+  }).join('');
+}
+
+async function exportarCSVFaltas() {
+  const todos = await lerTodos();
+  const faltas = todos.filter(r => r.status === 'confirmado' && r.itens.some(i => i.status === 'falta' || i.status === 'parcial'));
+  
+  if(!faltas.length) { alert('Nenhuma falta registrada.'); return; }
+  
+  let csv = 'LOJA,DATA,HORA,SETOR,ITEM,QTD_PEDIDA,QTD_ENTREGUE,STATUS\n';
+  faltas.forEach(req => {
+    req.itens.filter(i => i.status === 'falta' || i.status === 'parcial').forEach(it => {
+      const st = it.status === 'falta' ? 'SEM_ESTOQUE' : 'FALTA_PARCIAL';
+      csv += `${req.loja},${req.data},${req.hora},"${req.setorNome}","${it.nome}",${it.qtd_pedida},${it.qtd_entregue},${st}
+`;
+    });
+  });
+  
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `faltas_${lojaAtual}_${hoje().replace(/\//g,'-')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Init
+document.getElementById('home-data-txt').textContent =
+  new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+atualizarVisibilidadeSetores();
+atualizarHome();
+// Sem polling na home — atualiza ao voltar
+</script>
+</body>
+</html>

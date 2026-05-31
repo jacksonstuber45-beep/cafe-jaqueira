@@ -196,6 +196,29 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
   50%{ box-shadow: 0 0 0 8px rgba(116,198,157,0); }
 }
 #estoq-card { animation: pulse-border 2.5s ease-in-out 3; }
+
+/* BADGES DE NOTIFICAÇÃO */
+.btn-badge-wrap { position: relative; display: inline-block; width: 100%; }
+.notif-badge {
+  position: absolute;
+  top: -6px; right: -6px;
+  background: #C62828;
+  color: #fff;
+  border-radius: 20px;
+  min-width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 6px rgba(198,40,40,.4);
+  z-index: 10;
+  border: 2px solid #fff;
+}
+.notif-badge.verde { background: #2D6A4F; box-shadow: 0 2px 6px rgba(45,106,79,.4); }
+.notif-badge.amar  { background: #E6A817; box-shadow: 0 2px 6px rgba(230,168,23,.4); }
 </style>
 </head>
 <body>
@@ -235,7 +258,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 
     <!-- PEDIDOS — destaque total em cima -->
     <button onclick="abrirTela('tela-estoquista');carregarPedidos(true)"
-      style="width:100%;border:none;border-radius:16px;padding:16px 20px;margin-bottom:10px;
+      style="width:100%;border:none;border-radius:16px;padding:16px 20px;margin-bottom:10px;position:relative;
              background:linear-gradient(135deg,#1A3A2A 0%,#2D6A4F 100%);
              color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;
              box-shadow:0 4px 18px rgba(26,58,42,.35);text-align:left">
@@ -245,6 +268,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
         <div style="font-size:12px;opacity:.75;margin-top:2px" id="estoq-desc">Ver e responder pedidos pendentes</div>
       </div>
       <span style="font-size:22px;opacity:.6">›</span>
+      <span id="badge-pedidos" class="notif-badge" style="display:none">0</span>
     </button>
 
     <!-- DEMAIS — grade 3 colunas -->
@@ -270,20 +294,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
         <span class="eb-icon">🗑️</span><span class="eb-txt">Desperd.</span>
       </button>
 
-      <button class="estoq-btn" style="background:#FCE4D6;color:#7B1B1B;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(123,27,27,.15)" onclick="abrirDespGeral()">
+      <button class="estoq-btn" style="background:#FCE4D6;color:#7B1B1B;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(123,27,27,.15);position:relative" onclick="abrirDespGeral()">
         <span class="eb-icon">📊</span><span class="eb-txt">Desp. Geral</span>
+        <span id="badge-desp-geral" class="notif-badge amar" style="display:none">0</span>
       </button>
 
       <button class="estoq-btn" style="background:#FFF3E0;color:#E65100;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(230,81,0,.15)" onclick="exportarCSVBanco()">
         <span class="eb-icon">📤</span><span class="eb-txt">Exportar</span>
       </button>
 
-      <button class="estoq-btn" style="background:#EDE7F6;color:#4A148C;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(74,20,140,.15)" onclick="abrirRecebimentoTransf()">
+      <button class="estoq-btn" style="background:#EDE7F6;color:#4A148C;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(74,20,140,.15);position:relative" onclick="abrirRecebimentoTransf()">
         <span class="eb-icon">📬</span><span class="eb-txt">Receber Transf.</span>
+        <span id="badge-transf" class="notif-badge amar" style="display:none">0</span>
       </button>
 
-      <button class="estoq-btn" style="background:#FFEBEE;color:#B71C1C;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(183,28,28,.15)" onclick="abrirDivergencias()">
+      <button class="estoq-btn" style="background:#FFEBEE;color:#B71C1C;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(183,28,28,.15);position:relative" onclick="abrirDivergencias()">
         <span class="eb-icon">⚠️</span><span class="eb-txt">Divergências</span>
+        <span id="badge-diverg-btn" class="notif-badge" style="display:none">0</span>
       </button>
 
       <button class="estoq-btn" style="background:#E3F2FD;color:#0D47A1;border-radius:14px;padding:16px 6px;box-shadow:0 2px 8px rgba(13,71,161,.15)" onclick="abrirLancamentosDia()">
@@ -1567,7 +1594,7 @@ function setLoja(loja,btn){
   document.getElementById('btn-loja-rec').className='loja-btn '+(loja==='RECIFE'?'ativo-rec':'inativo');
   var estoqLbl=document.getElementById('estoq-loja-label');
   if(estoqLbl) estoqLbl.textContent=loja==='JAQUEIRA'?'Jaqueira':'Recife';
-  atualizarHome(); setTimeout(atualizarBadgeDiverg, 2000);
+  atualizarHome(); setTimeout(atualizarTodosBadges, 800); setInterval(atualizarTodosBadges, 10000);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1774,26 +1801,50 @@ function setDespQtd(setor,nome,val,inp){
   var bar=document.getElementById('desp-setor-resumo'); if(bar) bar.classList.toggle('show',nSel>0);
 }
 
+
+function toggleCatDesp(sd,cat){
+  var chave='desp_'+sd+'_'+sanitize(cat);
+  var aberta=categoriasAbertas[chave]!==false;
+  categoriasAbertas[chave]=!aberta;
+  var divId='catdesp_'+sanitize(cat)+'_'+sd;
+  var div=document.getElementById(divId);
+  if(div) div.style.display=aberta?'none':'block';
+  // atualizar seta
+  var hdrs=document.querySelectorAll('[data-desp-cat="'+cat+'"][data-desp-sd="'+sd+'"] .desp-seta');
+  hdrs.forEach(function(s){s.textContent=aberta?'▼':'▲';});
+}
+
 function renderDespSetor(){
   var setorBase=DESP_MAP[setorDespAtual]||'cozinha_quente';
   var busca=semAcento((document.getElementById('desp-setor-busca')?.value||'').trim());
+  var semBusca=busca==='';
   var itens=ITENS[setorBase]||[];
   var dados=movDados[setorDespAtual]||{};
-  var html=''; var catAtual=''; var nSel=0;
-  var sd=setorDespAtual;
+  var html=''; var catAtual=''; var nSel=0; var sd=setorDespAtual;
   itens.forEach(function(it){
     if(busca&&!semAcento(it.nome).includes(busca)) return;
-    if(it.cat!==catAtual){ catAtual=it.cat; html+='<div class="cat-hdr">'+catAtual+'</div>'; }
+    if(it.cat!==catAtual){
+      if(catAtual&&semBusca) html+='</div>';
+      catAtual=it.cat;
+      if(semBusca){
+        var chave='desp_'+sd+'_'+sanitize(catAtual);
+        var aberta=categoriasAbertas[chave]!==false;
+        var divId='catdesp_'+sanitize(catAtual)+'_'+sd;
+        html+='<div class="cat-hdr" data-desp-sd="'+sd+'" data-desp-cat="'+catAtual.replace(/"/g,'&quot;')+'" onclick="toggleCatDesp(this.dataset.despSd,this.dataset.despCat)" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between"><span>'+catAtual+'</span><span class="desp-seta" style="font-size:12px">'+(aberta?'▲':'▼')+'</span></div>';
+        html+='<div id="'+divId+'" style="display:'+(aberta?'block':'none')+'">';
+      } else {
+        html+='<div class="cat-hdr">'+catAtual+'</div>';
+      }
+    }
     var qtd=dados[it.nome]||0;
     if(qtd>0) nSel++;
     var idSafe=sanitize(it.nome)+'_desp';
-    var nm=it.nome.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var bg=qtd>0?'background:var(--verm-bg);border-left:3px solid var(--verm)':'';
     var cls='ctrl-inp'+(qtd>0?' tem-qtd':'');
     html+='<div class="item-row" style="'+bg+'">'
          +'<div class="item-info"><div class="item-nome">'+it.nome+'</div><div class="item-unid">'+it.unid+'</div></div>'
          +'<div class="item-ctrl">'
-         +'<button class="ctrl-btn" onclick="alterarDespQtd(this.dataset.s,this.dataset.n,-1)" data-s="'+sd+'" data-n="'+it.nome.replace(/"/g,'&quot;')+'">−</button>'
+         +'<button class="ctrl-btn" onclick="alterarDespQtd(this.dataset.s,this.dataset.n,-1)" data-s="'+sd+'" data-n="'+it.nome.replace(/"/g,'&quot;')+'">-</button>'
          +'<input type="number" inputmode="numeric" class="'+cls+'" id="desp_'+idSafe+'" value="'+(qtd>0?qtd:'')+'" placeholder="0" min="0"'
          +' data-s="'+sd+'" data-n="'+it.nome.replace(/"/g,'&quot;')+'"'
          +' onchange="setDespQtd(this.dataset.s,this.dataset.n,this.value,this)"'
@@ -1801,7 +1852,8 @@ function renderDespSetor(){
          +'<button class="ctrl-btn" onclick="alterarDespQtd(this.dataset.s,this.dataset.n,1)" data-s="'+sd+'" data-n="'+it.nome.replace(/"/g,'&quot;')+'">+</button>'
          +'</div></div>';
   });
-  document.getElementById('desp-setor-lista').innerHTML=html||'<div class="empty-state"><div class="ei">🔍</div>Nenhum item</div>';
+  if(semBusca&&catAtual) html+='</div>';
+  document.getElementById('desp-setor-lista').innerHTML=html||'<div class="empty-state"><div class="ei">search</div>Nenhum item</div>';
   document.getElementById('desp-setor-count').textContent=nSel;
   document.getElementById('desp-setor-resumo').classList.toggle('show',nSel>0);
 }
@@ -1837,6 +1889,7 @@ async function confirmarDespSetor(){
   var total=movimento.itens.reduce(function(s,i){return s+i.qtd;},0);
   alert('🗑️ Desperdício registrado!\n'+nomes.length+' item(ns) · total '+total+' unid.');
   abrirTela('tela-home');
+  setTimeout(atualizarTodosBadges, 300);
   // V14 — já salvo no localStorage
 }
 
@@ -2118,6 +2171,7 @@ async function confirmarMovimento(tipo){
   var total=movimento.itens.reduce(function(s,i){return s+i.qtd;},0);
   alert('✅ '+TIPO_NOME[tipo]+' registrada!\n'+nomes.length+' item(ns) · '+total+' unid.'+(destino?'\nDestino: '+destino.replace('_',' '):''));
   abrirTela('tela-home');
+  setTimeout(atualizarTodosBadges, 300);
   // V14 — já salvo no localStorage acima
 }
 
@@ -2219,7 +2273,7 @@ async function carregarHistorico(){
 function abrirTela(id){
   document.querySelectorAll('.tela').forEach(function(t){t.classList.remove('ativa');});
   var el=document.getElementById(id); if(el) el.classList.add('ativa');
-  if(id==='tela-home'){atualizarHome();stopPolling();pedidoEmEdicao=null;}
+  if(id==='tela-home'){atualizarHome();stopPolling();pedidoEmEdicao=null;setTimeout(atualizarTodosBadges,500);}
   if(id==='tela-estoquista'){pedidoEmEdicao=null;carregarPedidos(true);}
   if(id==='tela-transferencia') montarDestinosTransf();
 }
@@ -2484,6 +2538,62 @@ async function carregarDivergencias(){
     html+='</div>';
   });
   el.innerHTML=html;
+}
+
+
+// ═══════════════════════════════════════════════════
+// BADGES DE NOTIFICAÇÃO
+// ═══════════════════════════════════════════════════
+function setBadge(id, n){
+  var el = document.getElementById(id);
+  if(!el) return;
+  if(n > 0){
+    el.textContent = n > 99 ? '99+' : n;
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+async function atualizarTodosBadges(){
+  var todos = cacheLer(); // usar cache local direto — mais rápido
+  var h = hoje();
+  var loja = lojaAtual;
+
+  // Badge Pedidos — requisições pendentes de hoje
+  var pedPend = todos.filter(function(r){
+    return r.loja===loja && r.data===h &&
+           r.tipo_registro==='REQUISICAO' && r.status==='pendente';
+  }).length;
+  setBadge('badge-pedidos', pedPend);
+
+  // Badge Receber Transf — transferências EM TRÂNSITO para esta loja
+  var transfPend = todos.filter(function(r){
+    return r.tipo_registro==='MOVIMENTO' &&
+           r.tipo_mov==='TRANSFERENCIA' &&
+           r.status==='EM TRÂNSITO' &&
+           r.destino===loja;
+  }).length;
+  setBadge('badge-transf', transfPend);
+
+  // Badge Divergências — divergências de hoje
+  var divHoje = todos.filter(function(r){
+    return r.tipo_registro==='MOVIMENTO' &&
+           r.tipo_mov==='DIVERGENCIA' &&
+           r.data===h &&
+           (r.loja===loja||r.origem===loja);
+  }).length;
+  setBadge('badge-diverg-btn', divHoje);
+  setBadge('badge-diverg', divHoje);
+
+  // Badge Desp. Geral — total de registros de desperdício de hoje (não itens)
+  var despHoje = todos.filter(function(r){
+    return (r.loja===loja||r.origem===loja) &&
+           r.data===h &&
+           r.tipo_registro==='MOVIMENTO' &&
+           r.tipo_mov==='DESPERDICIO';
+  }).length;
+  setBadge('badge-desp-geral', despHoje);
 }
 
 // ═══════════════════════════════════════════════════

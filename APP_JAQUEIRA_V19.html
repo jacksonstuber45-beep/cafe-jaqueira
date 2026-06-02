@@ -2419,7 +2419,11 @@ function setLancTab(tab,btn){
 function abrirLancamentosDia(){ abrirTela('tela-lancamentos-dia'); carregarLancamentosDia(); }
 async function carregarLancamentosDia(){
   var todos=await lerTodos(); var h=hoje();
-  var lista=todos.filter(function(r){return r.loja===lojaAtual&&r.data===h&&r.tipo_registro==='MOVIMENTO';});
+  var lista=todos.filter(function(r){
+    if(r.data!==h||r.tipo_registro!=='MOVIMENTO') return false;
+    // Mostrar: lançamentos da loja OU transferências recebidas por esta loja
+    return r.loja===lojaAtual || r.destino===lojaAtual || r.loja_recebimento===lojaAtual;
+  });
   if(lancTab!=='todos') lista=lista.filter(function(r){return r.tipo_mov===lancTab;});
   var sub=document.getElementById('lanc-dia-sub'); if(sub) sub.textContent=h+' · '+lista.length+' lançamento(s)';
   var el=document.getElementById('lanc-dia-lista');
@@ -2432,12 +2436,19 @@ async function carregarLancamentosDia(){
   lista.forEach(function(reg){
     var t=reg.tipo_mov||''; var cor=CR[t]||'#2D3436'; var fundo=FD[t]||'#F5F7FA';
     var tq=reg.itens?reg.itens.reduce(function(s,i){return s+(i.qtd||0);},0):0;
-    var sb=reg.status==='EM TRÂNSITO'?'<span style="font-size:10px;font-weight:700;background:#F9A825;color:#fff;padding:2px 8px;border-radius:8px">EM TRÂNSITO</span>':'';
+    var statusCor=reg.status==='EM TRÂNSITO'?'#F9A825':reg.status==='RECEBIDO'?'#2E7D32':reg.status==='RECEBIDO COM DIVERGÊNCIA'?'#C62828':'#636E72';
+    var sb=reg.status&&reg.status!=='confirmado'?'<span style="font-size:10px;font-weight:700;background:'+statusCor+';color:#fff;padding:2px 8px;border-radius:8px">'+reg.status+'</span>':'';
+    var rota='';
+    if(reg.tipo_mov==='TRANSFERENCIA'){
+      rota=' · <strong>'+(reg.loja||'')+'</strong> → <strong>'+(reg.destino||'')+'</strong>';
+    } else if(reg.loja_recebimento){
+      rota=' · Recebido por '+reg.loja_recebimento;
+    }
     html+='<div style="margin:8px 12px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden">';
     html+='<div style="padding:11px 14px;display:flex;align-items:center;gap:10px;background:'+fundo+'">';
     html+='<span style="font-size:22px">'+(IC[t]||'📋')+'</span>';
     html+='<div style="flex:1"><div style="font-size:14px;font-weight:700;color:'+cor+'">'+reg.setorNome+'</div>';
-    html+='<div style="font-size:11px;color:#636E72">'+reg.hora+' · '+(reg.itens?reg.itens.length:0)+' item(ns) · '+tq+' unid.</div></div>'+sb+'</div>';
+    html+='<div style="font-size:11px;color:#636E72">'+reg.hora+' · '+(reg.itens?reg.itens.length:0)+' item(ns) · '+tq+' unid.'+rota+'</div></div>'+sb+'</div>';
     if(reg.itens) reg.itens.forEach(function(it){
       html+='<div style="padding:8px 14px;border-bottom:1px solid #F5F7FA;display:flex;align-items:center;justify-content:space-between">';
       html+='<div><div style="font-size:13px;font-weight:600">'+it.nome+'</div>';

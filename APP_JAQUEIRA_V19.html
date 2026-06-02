@@ -605,16 +605,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 // CONFIGURAÇÃO
 // ═══════════════════════════════════════════════════
 // V18 — Firebase Realtime Database (gratuito, sem restrição de domínio)
-// Pantry Cloud — gratuito, sem autenticação, sem restrição CORS
-const PANTRY_ID = 'cafe-jaqueira-sistema';
-const BASKET = 'requisicoes-v19';
-const FIREBASE_URL = 'https://getpantry.cloud/apiv1/pantry/'+PANTRY_ID+'/basket/'+BASKET;
-const HEADERS = {'Content-Type':'application/json'};
+// JSONBin — igual ao V13 que funcionava
+const BIN_URL = 'https://api.jsonbin.io/v3/b/67f45d3f8960c979a57b6b17';
+const FIREBASE_URL = BIN_URL; // alias para compatibilidade
+const HEADERS = {
+  'Content-Type':'application/json',
+  'X-Master-Key':'$2a$10$Z5VbIFxiymxMhpKkTBxnbuDRPt35PnjLBkh0.tEhGJ5GqELT9PQNW',
+  'X-Access-Key':'$2a$10$Z5VbIFxiymxMhpKkTBxnbuDRPt35PnjLBkh0.tEhGJ5GqELT9PQNW'
+};
 
 async function lerServidor(){
   try{
     var r=await Promise.race([
-      fetch(FIREBASE_URL+'?t='+Date.now(),{cache:'no-store'}),
+      fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
       new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},8000);})
     ]);
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -1597,12 +1600,13 @@ async function lerTodos(){
   (async function(){
     try{
       var r=await Promise.race([
-        fetch(FIREBASE_URL+'?t='+Date.now(),{cache:'no-store'}),
+        fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
         new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},4000);})
       ]);
       if(!r.ok) throw new Error('HTTP '+r.status);
       var j=await r.json();
-      var servidor=(j&&j.requisicoes)?j.requisicoes:[];
+      // JSONBin retorna {record:{requisicoes:[]}} — Pantry retorna {requisicoes:[]}
+      var servidor=(j&&j.record&&j.record.requisicoes)?j.record.requisicoes:(j&&j.requisicoes)?j.requisicoes:[];
       // SÓ mesclar se servidor tiver dados (nunca sobrescrever com lista menor)
       if(servidor.length>0){
         var local=cacheLer();
@@ -1651,7 +1655,7 @@ async function atualizarReq(id,updates){
     if(ic>=0){Object.assign(cache[ic],updates); cacheSalvar(cache);}
     try{
       var r2=await Promise.race([
-        fetch(FIREBASE_URL+'?t='+Date.now(),{cache:'no-store'}),
+        fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
         new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);})
       ]);
       var j=await r2.json(); var todos=(j&&j.requisicoes)?j.requisicoes:[];

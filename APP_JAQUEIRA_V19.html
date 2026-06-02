@@ -2519,7 +2519,7 @@ async function carregarTransfPendentes(){
       html+='</div>';
     });
     html+='<div style="padding:10px 14px">';
-    _transfItens[reg.id]=reg.itens; // guardar itens globalmente
+    _transfItens[reg.id]=reg.itens; _transfItens[String(reg.id)]=reg.itens; // guardar itens globalmente
     html+='<button onclick="confirmarRecebimento('+reg.id+')" style="width:100%;padding:13px;border:none;border-radius:11px;background:#2D6A4F;color:#fff;font-size:14px;font-weight:700;cursor:pointer">✅ Confirmar Recebimento</button>';
     html+='</div></div>';
   });
@@ -2535,8 +2535,13 @@ function validarQtdReceb(inp, maxQtd){
   inp.style.color = v<maxQtd ? '#C62828' : '#4A148C';
 }
 async function confirmarRecebimento(regId){
-  var itensOriginais=_transfItens[regId]||[];
   regId=Number(regId);
+  // Buscar itens — tentar tanto number quanto string como chave
+  var itensOriginais=_transfItens[regId]||_transfItens[String(regId)]||[];
+  if(!itensOriginais.length){
+    alert('Erro: itens da transferência não encontrados. Tente fechar e reabrir a tela.');
+    return;
+  }
   // Coletar qtds recebidas dos inputs
   var divergencias=[];
   var totalEnviado=0, totalRecebido=0;

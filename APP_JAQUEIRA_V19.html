@@ -605,19 +605,38 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza);color:v
 // CONFIGURAÇÃO
 // ═══════════════════════════════════════════════════
 // V18 — Firebase Realtime Database (gratuito, sem restrição de domínio)
-// JSONBin — igual ao V13 que funcionava
-const BIN_URL = 'https://api.jsonbin.io/v3/b/67f45d3f8960c979a57b6b17';
-const FIREBASE_URL = BIN_URL; // alias para compatibilidade
-const HEADERS = {
-  'Content-Type':'application/json',
-  'X-Master-Key':'$2a$10$Z5VbIFxiymxMhpKkTBxnbuDRPt35PnjLBkh0.tEhGJ5GqELT9PQNW',
-  'X-Access-Key':'$2a$10$Z5VbIFxiymxMhpKkTBxnbuDRPt35PnjLBkh0.tEhGJ5GqELT9PQNW'
-};
+// Firebase Realtime Database — Cafe-Jaqueira
+// SEM restrição de CORS, gratuito, funciona em qualquer domínio
+const FIREBASE_URL = 'https://cafe-jaqueira-default-rtdb.firebaseio.com/dados';
+const HEADERS = {'Content-Type':'application/json'};
+
+// GET do Firebase
+async function fetchBinGet(){
+  var r = await fetch(FIREBASE_URL+'.json?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  var j = await r.json();
+  // Firebase retorna os dados direto: {requisicoes:[...]} ou null
+  return j || {requisicoes:[]};
+}
+// PUT do Firebase
+async function fetchBinPut(dados){
+  try{
+    var r = await fetch(FIREBASE_URL+'.json',{
+      method:'PUT',
+      headers:HEADERS,
+      body:JSON.stringify(dados)
+    });
+    return r.ok;
+  }catch(e){
+    console.warn('fetchBinPut falhou:',e.message);
+    return false;
+  }
+}
 
 async function lerServidor(){
   try{
     var r=await Promise.race([
-      fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
+      fetchBinGet(),
       new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},8000);})
     ]);
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -628,7 +647,7 @@ async function lerServidor(){
 async function salvarServidor(lista){
   try{
     await Promise.race([
-      fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:lista})}),
+      fetchBinPut({requisicoes:lista}),
       new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);})
     ]);
     return true;
@@ -1599,13 +1618,11 @@ async function lerTodos(){
   }
   // Buscar servidor AGUARDANDO resultado (não em background)
   try{
-    var r=await Promise.race([
-      fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
-      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},5000);})
+    var j=await Promise.race([
+      fetchBinGet(),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},6000);})
     ]);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    var j=await r.json();
-    var servidor=(j&&j.record&&j.record.requisicoes)?j.record.requisicoes:(j&&j.requisicoes)?j.requisicoes:[];
+    var servidor=(j&&j.requisicoes)?j.requisicoes:[];
     if(servidor.length>0){
       // Mesclar servidor com cache local (local tem prioridade para itens novos)
       var local=cacheLer();
@@ -1623,7 +1640,7 @@ async function lerTodos(){
       // Reenviar fila pendente
       if(filaLer().length){
         try{
-          await fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:servidor})});
+          await fetchBinPut({requisicoes:servidor});
           filaLimpar();
         }catch(e){}
       }
@@ -1656,7 +1673,7 @@ async function salvarReq(req){
     if(!todos.some(function(r){return r.id===req.id;})) todos.push(req);
     todos=trimRequisicoes(todos);
     await Promise.race([
-      fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:todos})}),
+      fetchBinPut({requisicoes:todos}),
       new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);})
     ]);
     filaLimpar();
@@ -1671,7 +1688,7 @@ async function atualizarReq(id,updates){
     if(ic>=0){Object.assign(cache[ic],updates); cacheSalvar(cache);}
     try{
       var r2=await Promise.race([
-        fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
+        fetchBinGet(),
         new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);})
       ]);
       var j=await r2.json(); var todos=(j&&j.requisicoes)?j.requisicoes:[];
@@ -1679,7 +1696,7 @@ async function atualizarReq(id,updates){
       if(idx>=0) Object.assign(todos[idx],updates);
       else if(ic>=0) todos.push(cache[ic]);
       await Promise.race([
-        fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:trimRequisicoes(todos)})}),
+        fetchBinPut({requisicoes:trimRequisicoes(todos)}),
         new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);})
       ]);
       filaLimpar();
@@ -2025,7 +2042,7 @@ async function confirmarDespSetor(){
     try{
       var todos=await lerTodos();
       if(!todos.some(function(r){return r.id===movimento.id;})) todos.push(movimento);
-      await Promise.race([fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:todos})}),new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},8000);})]);
+      await fetchBinPut({requisicoes:todos});
       filaLimpar();
     }catch(e){console.warn('desperdício sync:',e.message);}
   })();
@@ -2313,7 +2330,7 @@ async function confirmarMovimento(tipo){
     try{
       var todos=await lerTodos();
       if(!todos.some(function(r){return r.id===movimento.id;})) todos.push(movimento);
-      await Promise.race([fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:todos})}),new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},8000);})]);
+      await fetchBinPut({requisicoes:todos});
       filaLimpar();
     }catch(e){console.warn('confirmarMovimento sync:',e.message);}
   })();
@@ -2633,7 +2650,7 @@ async function confirmarRecebimento(regId){
   // Sincronizar em background — não bloqueia
   (async function(){
     try{
-      await fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:cacheLer()})});
+      await fetchBinPut({requisicoes:cacheLer()});
       filaLimpar();
     }catch(e){ console.warn('sync:',e.message); }
   })();
@@ -2789,7 +2806,7 @@ document.addEventListener('DOMContentLoaded',function(){
       fila.forEach(function(item){
         if(!todos.some(function(r){return r.id===item.id;})) todos.push(item);
       });
-      return fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:trimRequisicoes(todos)})});
+      return fetchBinPut({requisicoes:trimRequisicoes(todos)});
     }).then(function(){
       filaLimpar();
       if(badge) badge.style.display='none';

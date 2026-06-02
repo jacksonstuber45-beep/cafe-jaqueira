@@ -1595,39 +1595,55 @@ async function lerTodos(){
       if(!cache.some(function(r){return r.id===item.id;})) cache.push(item);
     });
     cacheSalvar(cache);
+    cache=cacheLer();
   }
-  // Tentar buscar servidor em background (não bloqueia)
-  (async function(){
-    try{
-      var r=await Promise.race([
-        fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
-        new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},4000);})
-      ]);
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      var j=await r.json();
-      // JSONBin retorna {record:{requisicoes:[]}} — Pantry retorna {requisicoes:[]}
-      var servidor=(j&&j.record&&j.record.requisicoes)?j.record.requisicoes:(j&&j.requisicoes)?j.requisicoes:[];
-      // SÓ mesclar se servidor tiver dados (nunca sobrescrever com lista menor)
-      if(servidor.length>0){
-        var local=cacheLer();
-        var atualizado=false;
-        servidor.forEach(function(item){
-          var idx=local.findIndex(function(r){return r.id===item.id;});
-          if(idx>=0){ local[idx]=item; atualizado=true; }
-          else{ local.push(item); atualizado=true; }
-        });
-        if(atualizado){ cacheSalvar(local); }
+  // Buscar servidor AGUARDANDO resultado (não em background)
+  try{
+    var r=await Promise.race([
+      fetch(FIREBASE_URL+'/latest?t='+Date.now(),{headers:HEADERS,cache:'no-store'}),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},5000);})
+    ]);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var j=await r.json();
+    var servidor=(j&&j.record&&j.record.requisicoes)?j.record.requisicoes:(j&&j.requisicoes)?j.requisicoes:[];
+    if(servidor.length>0){
+      // Mesclar servidor com cache local (local tem prioridade para itens novos)
+      var local=cacheLer();
+      servidor.forEach(function(item){
+        var idx=local.findIndex(function(r){return r.id===item.id;});
+        if(idx>=0){ local[idx]=item; }
+        else{ local.push(item); }
+      });
+      local.forEach(function(item){
+        if(!servidor.some(function(r){return r.id===item.id;})){
+          servidor.push(item);
+        }
+      });
+      cacheSalvar(servidor);
+      // Reenviar fila pendente
+      if(filaLer().length){
+        try{
+          await fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:servidor})});
+          filaLimpar();
+        }catch(e){}
       }
       var badge=document.getElementById('offline-badge');
       if(badge) badge.style.display='none';
-      // Reenviar fila se houver
-      if(filaLer().length){
-        await fetch(FIREBASE_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({requisicoes:local})});
-        filaLimpar();
-      }
-    }catch(e){ /* servidor indisponível — dados já estão no cache */ }
-  })();
-  return cache;
+      return servidor;
+    }
+  }catch(e){
+    // Servidor indisponível — usar cache local
+    var badge=document.getElementById('offline-badge');
+    if(!badge){
+      badge=document.createElement('div');
+      badge.id='offline-badge';
+      badge.style.cssText='position:fixed;top:0;left:0;right:0;background:#E65100;color:#fff;text-align:center;padding:6px;font-size:12px;font-weight:700;z-index:9999';
+      badge.textContent='📶 Sem conexão — dados salvos localmente';
+      document.body.appendChild(badge);
+    }
+    badge.style.display='block';
+  }
+  return cacheLer();
 }
 async function lerDados(){
   var todos=await lerTodos(); var h=hoje(),loja=lojaAtual;

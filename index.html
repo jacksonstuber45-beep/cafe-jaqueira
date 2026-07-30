@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<title>☕ Café Jaqueira · V26.7.9</title>
+<title>☕ Café Jaqueira · V26.7.14</title>
 <style>
 :root{
   --verde:#1A3A2A;--verde-m:#2D6A4F;--verde-c:#40916C;--verde-bg:#D8F3DC;
@@ -945,7 +945,7 @@ window.uiAlerta = function(msg){
     <div class="acc-logo">☕</div>
     <div class="acc-marca">Caf&eacute; <b>Jaqueira</b></div>
     <div class="acc-slogan">Escolha por onde vai entrar</div>
-    <div class="acc-ver">V26.7.9</div>
+    <div class="acc-ver">V26.7.14</div>
   </div>
   <div class="content-scroll" id="acc-corpo"></div>
 </div>
@@ -1007,6 +1007,7 @@ window.uiAlerta = function(msg){
         <span class="bloco-icon">🎉</span>
         <div class="bloco-nome">Coffee Break</div>
         <div class="bloco-desc">Or&ccedil;amento &middot; eventos &middot; empresas</div>
+        <span id="badge-coffee" class="notif-badge" style="display:none">0</span>
       </button>
       <button class="bloco" style="background:#00838F;box-shadow:0 4px 16px #00838F44;position:relative;grid-column:1/-1" onclick="abrirB2B()">
         <span class="bloco-icon">🤝</span>
@@ -7156,16 +7157,26 @@ function lerLocal(){
     var o=JSON.parse(s); if(o&&o.ped){ C=o; C.ped=C.ped||[]; C.seq=C.seq||1; C.precos=C.precos||{}; return true; }
   }catch(e){} return false;
 }
-var _sinc=false;
-function salvar(){
-  invalidarIndicesCompras();
-  podar(); salvarLocal();
-  if(_sinc) return; _sinc=true;
-  setTimeout(function(){ _sinc=false;
-    fetch(C17_URL+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(C)})
-      .catch(function(e){ console.warn('clube17 sync:',e.message); });
-  },1200);
+var _sinc=false, _pendente=false, _c17UltimaAcao=0;
+function enviarServidorC17(usarKeepalive){
+  _pendente=false;
+  var corpo=JSON.stringify(C);
+  var op={method:'PUT',headers:{'Content-Type':'application/json'},body:corpo};
+  // keepalive garante o envio mesmo trocando de tela/minimizando (limite ~60KB)
+  if(usarKeepalive && corpo.length<60000) op.keepalive=true;
+  return fetch(C17_URL+'.json',op)
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return true; })
+    .catch(function(e){ console.warn('clube17 sync:',e.message); _pendente=true; return false; });
 }
+function salvar(){
+  try{ if(window.invalidarIndicesCompras) window.invalidarIndicesCompras(); }catch(e){}
+  podar(); salvarLocal();
+  _c17UltimaAcao=Date.now(); _pendente=true;
+  if(_sinc) return; _sinc=true;
+  setTimeout(function(){ _sinc=false; enviarServidorC17(false); },900);
+}
+// força o envio do que ficou pendente (ao minimizar/fechar o app)
+function flushC17(){ if(_pendente) enviarServidorC17(true); }
 async function baixar(){
   try{ var r=await fetch(C17_URL+'.json?t='+Date.now(),{cache:'no-store'});
     if(!r.ok) return null; return await r.json(); }catch(e){ return null; }
@@ -7487,6 +7498,10 @@ function renderEspelho(){
   var el=alvoEl(); if(!el) return;
   if(esp){ el.innerHTML=telaEspelhoPed(); return; }
   var h=abasHist(espHist,'espVerHist');
+  if(espFonte==='Clube 17'){
+    var _al=alertasC17();
+    if(_al.length) h+='<div class="est-aviso" style="background:#FFEBEE;color:#C62828;border-left:4px solid #C62828">⚠️ '+_al.length+' pedido(s) recebido(s) com problema nas últimas 24h. Toque em <b>Histórico</b> para ver o que houve.</div>';
+  }
   if(espHist){
     var F=fechados().filter(daFonte);
     if(!F.length) return void(el.innerHTML=h+'<div class="empty-state"><div class="ei">📋</div>Nada no histórico ainda</div>');
@@ -7667,13 +7682,14 @@ function saidaAgora(p,prontos,E){
   });
   p.status='enviado'; p.enviadoEm=dBR(new Date())+' '+agora();
   logar(p,'Saiu da Jaqueira: '+prontos.length+' item(ns)');
-  if(p.fonte==='B2B'){
+  if(p.fonte==='B2B'||p.fonte==='Coffee Break'){
     prontos.forEach(function(it){ it.qtd_recebida=it.qtd_enviada; it.status='recebido'; });
     var faltam=p.itens.some(function(it){ return it.status!=='recebido'; });
-    if(!faltam){ p.status='fechado'; p.fechadoEm=dBR(new Date()); }
-    logar(p,'Revenda B2B: entrega confirmada na saída');
+    if(!faltam){ p.status='fechado'; p.fechadoEm=dBR(new Date()); logar(p,'Encerrado na saída · entrega confirmada'); }
+    logar(p,(p.fonte==='B2B'?'Revenda B2B':'Coffee Break')+': entrega confirmada na saída');
   }
   salvar();
+  try{ atualizarBadgeC17(); }catch(e){}
   if(E) E.redesenhar&&E.redesenhar();
   renderEspelho();
   UIC.aviso('Saída confirmada · '+prontos.length+' item(ns) baixados do estoque','ok');
@@ -7785,6 +7801,19 @@ window.acStep=function(i,delta,v){
     el.className='qt-inp '+corQtd(it.qtd_recebida, it.qtd_enviada, it.status==='recebido');
   }
 };
+// encerra um pedido do Clube 17 e, se algum item veio com problema,
+// deixa um alerta de 24h para o estoquista perceber
+function encerrarPedidoC17(p,auto){
+  p.status='fechado'; p.fechadoEm=dBR(new Date());
+  var temObs=p.itens.some(function(it){ return it.obs; });
+  if(temObs){ p.alertaObs=true; p.alertaAte=Date.now()+86400000; }
+  logar(p,(auto?'Encerrado automaticamente · recebimento confirmado':'Pedido encerrado')+(temObs?' · com alerta de problema (24h)':''));
+}
+// pedidos do Clube 17 encerrados nas últimas 24h que tiveram problema
+function alertasC17(){
+  var t=Date.now();
+  return C.ped.filter(function(p){ return (p.fonte||'Clube 17')==='Clube 17' && p.alertaObs && (p.alertaAte||0)>t; });
+}
 window.acReceber=function(i){
   var p=pedido(ac), it=p.itens[i];
   if(!it.qtd_recebida) it.qtd_recebida=it.qtd_enviada;
@@ -7794,7 +7823,12 @@ window.acReceber=function(i){
   }
   it.status='recebido';
   logar(p,'Clube 17 recebeu: '+it.nome+' '+fq(it.qtd_recebida));
-  salvar(); renderAcomp();
+  // encerra sozinho quando TODOS os itens já foram recebidos
+  var fechou=false;
+  if(p.itens.every(function(x){ return x.status==='recebido'; })){ encerrarPedidoC17(p,true); fechou=true; }
+  salvar(); try{ atualizarBadgeC17(); }catch(e){}
+  if(fechou){ ac=null; renderAcomp(); UIC.aviso('Tudo recebido · pedido encerrado','ok'); }
+  else renderAcomp();
 };
 var obsIdx=null;
 window.acObs=function(i){
@@ -7823,9 +7857,8 @@ window.acOnFoto=async function(inp){
 window.acFechar=function(){
   var p=pedido(ac);
   UIC.confirmar('Encerrar '+p.id+'?','Sai da lista. Fica guardado por 8 dias.',function(){
-    p.status='fechado'; p.fechadoEm=dBR(new Date());
-    logar(p,'Pedido encerrado');
-    salvar(); ac=null; renderAcomp(); UIC.aviso('Pedido encerrado','ok');
+    encerrarPedidoC17(p,false);
+    salvar(); try{ atualizarBadgeC17(); }catch(e){} ac=null; renderAcomp(); UIC.aviso('Pedido encerrado','ok');
   },'Encerrar');
 };
 
@@ -7844,21 +7877,28 @@ window.atualizarBadgeC17=function(){
 
     var esperandoC17 = conta('Clube 17', pend);
     var esperandoCB  = conta('Coffee Break', pend);
-    var caminhoC17   = conta('Clube 17', indo);
-    var eventosCB    = A.filter(function(p){ return (p.fonte||'')==='Coffee Break'; }).length;
-
-    var põe=function(id,n){
-      var e=document.getElementById(id);
-      if(e){ e.textContent=n; e.style.display=n?'flex':'none'; }
-    };
-    põe('badge-espelho',    esperandoC17);
-    põe('badge-espelho-cb', esperandoCB);
     var esperandoB2B = conta('B2B', pend);
+
+    // pedidos EM ABERTO por canal — a bolinha aparece quando tem pedido e some quando encerra
+    var abertoDe=function(fonte){ return A.filter(function(p){ return (p.fonte||'Clube 17')===fonte; }).length; };
+    var abC17=abertoDe('Clube 17'), abCB=abertoDe('Coffee Break'), abB2B=abertoDe('B2B');
+
+    var alerta = alertasC17().length;   // problemas nas últimas 24h (visão do estoquista)
+
+    var põe=function(id,n,cor){
+      var e=document.getElementById(id);
+      if(e){ e.textContent=n; e.style.display=n?'flex':'none'; if(cor) e.style.background=cor; }
+    };
+    // ── as três bolinhas coloridas (Clube 17 · Coffee Break · B2B) ──
+    põe('badge-c17',    abC17, '#EC407A');
+    põe('badge-coffee', abCB,  '#AB47BC');
+    põe('badge-b2b',    abB2B, '#26C6DA');
+    // ── fila do estoquista (espelho) + alerta de problema no Clube 17 ──
+    põe('badge-espelho',     esperandoC17+alerta);
+    põe('badge-espelho-cb',  esperandoCB);
     põe('badge-espelho-b2b', esperandoB2B);
-    põe('badge-b2b', A.filter(function(p){ return (p.fonte||'')==='B2B'; }).length);
-    põe('badge-c17',        caminhoC17);
-    põe('badge-coffee',     eventosCB);
-    põe('badge-hub-c17',    esperandoC17+esperandoCB+esperandoB2B);
+    // ── bolinha do hub Parceiros: total de pedidos em aberto ──
+    põe('badge-hub-c17', abC17+abCB+abB2B);
   }catch(e){}
 };
 
@@ -7895,6 +7935,65 @@ function novoPedido(o){
   return p;
 }
 window.renderAcompPublico=function(){ ac=null; acHist=false; renderAcomp(); };
+
+// ── SINCRONIZAÇÃO VIVA ──────────────────────────────────────────
+// O outro lado (Clube 17 <-> Espelho do estoquista) passa a atualizar
+// sozinho, sem precisar fechar e abrir o app.
+var _c17Timer=null;
+function _telaAtiva(){ var t=document.querySelector('.tela.ativa'); return t?t.id:''; }
+function _ehC17(id){ return id==='tela-c17-pedido'||id==='tela-c17-acompanhar'||id==='tela-c17-espelho'||id==='tela-c17-espelho-cb'||id==='tela-espelho-b2b'; }
+function _redesenhar(id){
+  if(id==='tela-c17-acompanhar') renderAcomp();
+  else if(id==='tela-c17-espelho'||id==='tela-c17-espelho-cb'||id==='tela-espelho-b2b') renderEspelho();
+  // tela-c17-pedido é rascunho local: não redesenha
+}
+function _ocupado(){
+  if(document.getElementById('uic-fundo')) return true;              // tem janela/confirmação aberta
+  var a=document.activeElement;
+  if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')) return true;  // está digitando
+  return false;
+}
+function _difere(srv){ try{ return JSON.stringify(srv.ped)!==JSON.stringify(C.ped); }catch(e){ return true; } }
+function _adotar(srv){
+  C=srv; C.ped=C.ped||[]; C.seq=C.seq||1; C.precos=C.precos||{};
+  podar(); salvarLocal(); atualizarBadgeC17();
+  if(esp&&!pedido(esp)) esp=null;   // pedido encerrado no outro lado: volta pra lista
+  if(ac&&!pedido(ac)) ac=null;
+}
+async function _puxar(){
+  var id=_telaAtiva();
+  if(!_ehC17(id)) return;
+  if(_sinc||_pendente) return;                 // o meu é mais novo: não sobrescreve
+  if(Date.now()-_c17UltimaAcao<2500) return;   // acabei de mexer: espera assentar
+  if(_ocupado()) return;                        // não apaga digitação nem janela aberta
+  if(!navigator.onLine) return;
+  var srv=await baixar();
+  if(!srv||!srv.ped) return;
+  if(_ocupado()||_sinc||_pendente) return;      // checa de novo (baixar demora)
+  if(!_difere(srv)) return;
+  _adotar(srv);
+  _redesenhar(_telaAtiva());
+}
+function _ligarPoll(){ if(_c17Timer) return; _c17Timer=setInterval(_puxar,10000); }
+function _desligarPoll(){ if(_c17Timer){ clearInterval(_c17Timer); _c17Timer=null; } }
+
+// liga o polling ao entrar numa tela do Clube 17; desliga ao sair
+var _abrirC17=window.abrirTela;
+if(typeof _abrirC17==='function'){
+  window.abrirTela=function(t){
+    var r=_abrirC17.apply(this,arguments);
+    if(_ehC17(t)){ _ligarPoll(); setTimeout(_puxar,300); } else { _desligarPoll(); }
+    return r;
+  };
+}
+// ao voltar pro app: puxa na hora. Ao sair/minimizar: garante o envio pendente
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){ flushC17(); _desligarPoll(); }
+  else if(_ehC17(_telaAtiva())){ _ligarPoll(); _puxar(); }
+});
+window.addEventListener('pagehide', flushC17);
+// ────────────────────────────────────────────────────────────────
+
 window.CLUBE17={ versao:1, pedidos:function(){return C.ped;}, pedidoAberto:function(){ return esp?pedido(esp):null; }, pedido:pedido, estado:function(){return C;},
                  salvar:salvar, podar:podar, novoPedido:novoPedido };
 })();
@@ -8548,6 +8647,7 @@ function nomeLoja(l){ return l==='RECIFE'?'Recife':'Jaqueira'; }
 
 var _cmpIdx=null,_sugMemo={};
 function invalidarIndicesCompras(){_cmpIdx=null;_sugMemo={};}
+window.invalidarIndicesCompras=invalidarIndicesCompras;
 function cmpIndices(){
   if(_cmpIdx)return _cmpIdx;
   var I={porItem:{},histF:{},assocF:{},forn:{},itensF:{}};
@@ -10677,7 +10777,7 @@ setTimeout(migrar43,600);
 .toledo-prod-sub{margin-top:7px;font-size:10.5px;line-height:1.4;color:#4A6756}.toledo-sem{margin:5px 0 9px;padding:8px 10px;border:1px dashed #C6A86A;border-radius:10px;background:#FFF8E8;color:#74551D;font-size:10.5px;line-height:1.4}
 </style>
 <script id="v2650-version">
-(function(){function v(){document.title='☕ Café Jaqueira · V26.7.9';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · NIO ativo em modo operacional';});}document.addEventListener('DOMContentLoaded',function(){setTimeout(v,100)});setTimeout(v,300);})();
+(function(){function v(){document.title='☕ Café Jaqueira · V26.7.14';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · NIO ativo em modo operacional';});}document.addEventListener('DOMContentLoaded',function(){setTimeout(v,100)});setTimeout(v,300);})();
 </script>
 
 <style id="v2652-style">
@@ -10946,7 +11046,7 @@ window.abrirSetor=function(id){
   return abrirSetorAnterior.apply(this,arguments)
 };
 
-function preparar(){document.title='☕ Café Jaqueira · V26.7.9';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'});migrar();setTimeout(renderSetoresV2654,250)}
+function preparar(){document.title='☕ Café Jaqueira · V26.7.14';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'});migrar();setTimeout(renderSetoresV2654,250)}
 document.addEventListener('DOMContentLoaded',function(){setTimeout(preparar,500)});setTimeout(preparar,900);
 })();
 </script>
@@ -11204,7 +11304,7 @@ if(window.abrirPainelV263){
 }
 
 function preparar2655(){
-  document.title='☕ Café Jaqueira · V26.7.9';
+  document.title='☕ Café Jaqueira · V26.7.14';
   document.querySelectorAll('.vp-ver').forEach(function(e){
     e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto';
   });
@@ -11285,7 +11385,7 @@ if(setLojaAnterior){
 }
 
 function prepararV2656(){
-  document.title='☕ Café Jaqueira · V26.7.9';
+  document.title='☕ Café Jaqueira · V26.7.14';
   document.querySelectorAll('.vp-ver').forEach(function(e){
     e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto';
   });
@@ -11391,7 +11491,7 @@ function testes7(){
 window.v2657ExecutarTestes=testes7;
 
 function preparar7(){
-  document.title='☕ Café Jaqueira · V26.7.9';
+  document.title='☕ Café Jaqueira · V26.7.14';
   document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'});
   testes7();window.v2657RecalcularAlertas();
 }
@@ -11474,7 +11574,7 @@ window.filtroPlanoProducaoV2653=function(v,b){var r=filtroAnterior65.apply(this,
 
 window.abrirOrdemSetorV2660=function(){var E=E65(),t=E&&E.testeCicloV2660,o=t&&E.prodOrdens&&E.prodOrdens.find(function(x){return x.id===t.ordemProducaoId});if(!t)return;focoOrdem65=o&&o.id||t.ordemProducaoId||'';var ids={Cozinha:(t.loja==='RECIFE'?'prod_coz_rec':'prod_coz_jaq'),Confeitaria:'confeitaria_jaq','Cortes Proteína':(t.loja==='RECIFE'?'prod_prot_rec':'prod_prot_jaq'),Bar:(t.loja==='RECIFE'?'prod_bar_rec':'prod_bar_jaq'),'Torrefação':'torrefacao_rec'};if(ids[t.setor])window.abrirSetor(ids[t.setor]);setTimeout(function(){abrirFocado65(t.setor,focoOrdem65)},120)};
 
-function preparar65(){document.title='☕ Café Jaqueira · V26.7.9';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'})}
+function preparar65(){document.title='☕ Café Jaqueira · V26.7.14';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'})}
 document.addEventListener('DOMContentLoaded',function(){setTimeout(preparar65,700)});setTimeout(preparar65,1100);
 })();
 </script>
@@ -12189,7 +12289,7 @@ var PERMITIDO = {
 };
 
 var perfil=null;
-var VERSAO='V26.7.9';
+var VERSAO='V26.7.14';
 function exige(area){
   var p=PINS[area];
   return !!(p && String(p).trim());   // senha em branco = área aberta
@@ -12294,10 +12394,12 @@ window.accPortaria=function(){
 };
 function desenharPortaria(){
   var el=document.getElementById('acc-corpo'); if(!el) return;
+  _accVista='portaria';
   el.innerHTML=
     ['JAQUEIRA','RECIFE'].map(porta).join('')+
     '<div class="acc-sep">ou entre como</div>'+
-    '<button class="acc-porta" style="background:#37474F" onclick="accParceiros()">'+
+    '<button class="acc-porta" style="position:relative;background:#37474F" onclick="accParceiros()">'+
+      badgesParceiros()+
       '<span class="acc-ic">🤝</span>'+
       '<div class="acc-nome">Parceiros</div>'+
       '<div class="acc-desc">Clube 17 · Coffee Break · Revenda B2B</div>'+
@@ -12305,14 +12407,40 @@ function desenharPortaria(){
     '<div class="acc-rodape">'+(temAlgumaSenha()?'Cada área tem a sua senha.':'🔓 Senhas desligadas — entrada livre')+'<br>Esqueceu? Fale com a gestão.</div>'+
     '<button onclick="accGerenciar()" style="display:block;margin:14px auto 0;padding:9px 16px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#CFD8DC;border-radius:10px;font:800 12px/1.1 system-ui;cursor:pointer">🔑 Gerenciar senhas e acesso</button>';
 }
+// ── bolinhas de pedidos em aberto (lidas do módulo Clube 17) ──
+var _accVista='portaria';
+var CORES_BADGE={'Clube 17':'#EC407A','Coffee Break':'#AB47BC','B2B':'#26C6DA'};
+function badgeHTML(n,cor){
+  return n ? '<span style="position:absolute;top:10px;right:12px;min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:'+(cor||'#E53935')+';color:#fff;font:800 13px/24px system-ui;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.35);z-index:2">'+n+'</span>' : '';
+}
+// três bolinhas coloridas (uma por canal) para o card Parceiros da entrada
+function badgesParceiros(){
+  var c=contarAbertosPorFonte();
+  var chips=[['Clube 17',c['Clube 17']],['Coffee Break',c['Coffee Break']],['B2B',c['B2B']]]
+    .filter(function(x){ return x[1]; })
+    .map(function(x){ return '<span title="'+x[0]+'" style="min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:'+CORES_BADGE[x[0]]+';color:#fff;font:800 12px/22px system-ui;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.35)">'+x[1]+'</span>'; })
+    .join('');
+  return chips ? '<span style="position:absolute;top:10px;right:12px;display:flex;gap:5px;z-index:2">'+chips+'</span>' : '';
+}
+function contarAbertosPorFonte(){
+  var r={'Clube 17':0,'Coffee Break':0,'B2B':0};
+  try{
+    var ped=(window.CLUBE17&&window.CLUBE17.pedidos)?window.CLUBE17.pedidos():[];
+    (ped||[]).forEach(function(p){ if(p&&p.status!=='fechado'){ var f=p.fonte||'Clube 17'; if(r[f]!=null) r[f]++; } });
+  }catch(e){}
+  return r;
+}
 function porta(k){
   var p=PERFIS[k];
-  return '<button class="acc-porta" style="background:'+p.cor+'" onclick="accEntrar(\''+jse(k)+'\')">'+
+  var badge=CORES_BADGE[k] ? badgeHTML(contarAbertosPorFonte()[k]||0, CORES_BADGE[k]) : '';
+  return '<button class="acc-porta" style="position:relative;background:'+p.cor+'" onclick="accEntrar(\''+jse(k)+'\')">'+
+    badge+
     '<span class="acc-ic">'+p.ic+'</span>'+
     '<div class="acc-nome">'+esc(p.nome)+'</div>'+
     '<div class="acc-desc">'+esc(p.desc)+'</div></button>';
 }
 window.accParceiros=function(){
+  _accVista='parceiros';
   var el=document.getElementById('acc-corpo'); if(!el) return;
   el.innerHTML=
     '<div class="acc-volta" onclick="accPortaria()">← Voltar</div>'+
@@ -12320,6 +12448,15 @@ window.accParceiros=function(){
     ['Clube 17','Coffee Break','B2B'].map(porta).join('')+
     '<div class="acc-rodape">Cada parceiro entra com a senha da sua área.</div>';
 };
+// mantém as bolinhas atualizadas enquanto a tela de entrada está aberta
+setInterval(function(){
+  try{
+    var t=document.querySelector('.tela.ativa');
+    if(!t || t.id!=='tela-acesso') return;
+    if(document.getElementById('acc-teclado')) return;   // teclado de senha aberto
+    if(_accVista==='parceiros') accParceiros(); else desenharPortaria();
+  }catch(e){}
+}, 8000);
 window.accEntrar=function(k){
   var p=PERFIS[k];
   if(!exige(k)){ liberar(k); return; }          // área aberta: entra direto

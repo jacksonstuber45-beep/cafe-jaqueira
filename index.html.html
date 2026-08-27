@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>☕ Café Jaqueira · V26.9.0</title>
+<title>☕ Café Jaqueira · V26.8.3-CORRIGIDO</title>
 <style>
 :root{
   --verde:#1A3A2A;--verde-m:#2D6A4F;--verde-c:#40916C;--verde-bg:#D8F3DC;
@@ -947,7 +947,7 @@ window.uiAlerta = function(msg){
     <div class="acc-logo">☕</div>
     <div class="acc-marca">Caf&eacute; <b>Jaqueira</b></div>
     <div class="acc-slogan">Escolha por onde vai entrar</div>
-    <div class="acc-ver">V26.9.0</div>
+    <div class="acc-ver">V26.8.3-CORRIGIDO</div>
   </div>
   <div class="content-scroll" id="acc-corpo"></div>
 </div>
@@ -1695,6 +1695,7 @@ window.uiAlerta = function(msg){
     </div>
     <div class="hdr-sub" id="transf-sub">Selecione o destino</div>
   </div>
+  <div id="nio-sugestoes-transf"></div>
   <div class="transf-destinos" id="transf-destinos"></div>
   <div class="busca-wrap">
     <input type="search" placeholder="🔍 Buscar item..." id="transferencia-busca" oninput="renderMovimento('transferencia')" autocomplete="off">
@@ -1960,9 +1961,7 @@ async function lerServidor(){
       fetchBinGet(),
       new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},8000);})
     ]);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    var d=await r.json();
-    return (d&&d.requisicoes)?d.requisicoes:[];
+    return (r&&r.requisicoes)?r.requisicoes:[];
   }catch(e){ console.warn('lerServidor falhou:',e); return null; }
 }
 async function salvarServidor(lista){
@@ -3526,7 +3525,7 @@ function filaLer(){ try{ var s=localStorage.getItem(FILA_KEY()); return s?JSON.p
 function filaAdicionar(req){ var f=filaLer(); f.push(req); try{ localStorage.setItem(FILA_KEY(),JSON.stringify(f)); }catch(e){} }
 function filaLimpar(){ try{ localStorage.removeItem(FILA_KEY()); }catch(e){} }
 function pesoStatus(r){
-  var ordem={'pendente':1,'EM TRÂNSITO':1,'confirmado':2,'RECEBIDO':2,'RECEBIDO COM DIVERGÊNCIA':2,'ok':2};
+  var ordem={'SUGERIDA':0,'pendente':1,'EM TRÂNSITO':1,'confirmado':2,'RECEBIDO':2,'RECEBIDO COM DIVERGÊNCIA':2,'ok':2,'RECUSADA':3};
   return ordem[r&&r.status]||0;
 }
 function dedupPorId(lista){
@@ -3604,9 +3603,12 @@ async function lerTodos(){
         }
       });
       // 2) Acrescentar novidades locais que o servidor ainda não tem
-      servidor.forEach(function(item){
-        var idx=local.findIndex(function(r){return r.id===item.id;});
-        if(idx>=0){ local[idx]=servidor[servidor.indexOf(item)]; }
+      servidor.forEach(function(item,si){
+        var idx=local.findIndex(function(r){return String(r.id)===String(item.id);});
+        if(idx>=0){
+          if(pesoStatus(local[idx])>pesoStatus(item)) servidor[si]=local[idx]; // local mais avançado vence
+          else local[idx]=item;
+        }
         else{ local.push(item); }
       });
       local.forEach(function(item){
@@ -3681,7 +3683,7 @@ async function atualizarReq(id,updates){
         fetchBinGet(),
         new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);})
       ]);
-      var j=await r2.json(); var todos=(j&&j.requisicoes)?j.requisicoes:[];
+      var j=r2; var todos=(j&&j.requisicoes)?j.requisicoes:[];  // fetchBinGet já devolve JSON pronto
       var idx=todos.findIndex(function(r){return Number(r.id)===id;});
       if(idx>=0) Object.assign(todos[idx],updates);
       else if(ic>=0) todos.push(cache[ic]);
@@ -4511,7 +4513,76 @@ function atualizarResumoMov(tipo){
   var bar=document.getElementById(tipo+'-resumo'); if(bar) bar.classList.toggle('show',n>0);
 }
 
+function nioSugestoesPendentes(){
+  return (cacheLer()||[]).filter(function(r){
+    return r.tipo_registro==='MOVIMENTO'&&r.tipo_mov==='TRANSFERENCIA'&&r.status==='SUGERIDA'&&
+           (r.origem||r.loja)===lojaAtual&&(r.itens||[]).length;
+  });
+}
+function renderNioSugestoes(){
+  var el=document.getElementById('nio-sugestoes-transf'); if(!el) return;
+  var lista=nioSugestoesPendentes();
+  if(!lista.length){ el.innerHTML=''; return; }
+  var html='<div style="margin:8px 12px;padding:10px 12px;border-radius:12px;background:#FFF8E1;border:1px solid #FFE082">';
+  html+='<div style="font-size:13px;font-weight:700;color:#F57F17;margin-bottom:6px">🧠 O NIO sugere '+lista.length+' transferência(s)</div>';
+  html+='<div style="font-size:11px;color:#795548;margin-bottom:8px">Nada é enviado sem a sua confirmação. Confira o que vai realmente sair da loja.</div>';
+  lista.forEach(function(r){
+    var destNm=r.destino==='JAQUEIRA'?'Jaqueira':r.destino==='RECIFE'?'Recife':(r.destino||'?');
+    html+='<div style="margin-top:8px;padding:10px;border-radius:10px;background:#fff">';
+    html+='<div style="font-size:12px;font-weight:700;color:#4A148C">Para: '+destNm+'</div>';
+    html+='<div style="font-size:10px;color:#636E72;margin-bottom:6px">'+(r.motivo||'Equalização de estoque')+'</div>';
+    (r.itens||[]).forEach(function(it,i){
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0">';
+      html+='<div style="flex:1;font-size:12px">'+it.nome+' <span style="color:#636E72">('+(it.unid||'unid')+')</span></div>';
+      html+='<input type="text" inputmode="decimal" id="sug_'+r.id+'_'+i+'" value="'+fmtQtd(it.qtd)+'" class="ped-inp" style="width:64px;height:36px;font-size:15px">';
+      html+='</div>';
+    });
+    html+='<div style="display:flex;gap:8px;margin-top:8px">';
+    html+='<button onclick="recusarSugestaoNio('+r.id+')" style="flex:1;padding:10px;border:1px solid #C62828;border-radius:10px;background:#fff;color:#C62828;font-size:12px;font-weight:700;cursor:pointer">✖ Não vou enviar</button>';
+    html+='<button onclick="aceitarSugestaoNio('+r.id+')" style="flex:2;padding:10px;border:none;border-radius:10px;background:#2D6A4F;color:#fff;font-size:12px;font-weight:700;cursor:pointer">✅ Confirmar envio</button>';
+    html+='</div></div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+function _salvarSugestao(reg){
+  var c=cacheLer(); var k=c.findIndex(function(r){return String(r.id)===String(reg.id);});
+  if(k>=0) c[k]=reg; else c.push(reg);
+  cacheSalvar(c); filaAdicionar(reg);
+  (async function(){
+    try{
+      var _l=cacheLer(); var _j=null; try{ _j=await fetchBinGet(); }catch(e){}
+      var _srv=(_j&&_j.requisicoes)?_j.requisicoes:[];
+      var _m=trimRequisicoes(_srv.concat(_l));
+      if(await fetchBinPut({requisicoes:_m})){ cacheSalvar(_m); filaLimpar(); }
+    }catch(e){ console.warn('sync sugestao:',e.message); }
+  })();
+}
+function aceitarSugestaoNio(id){
+  var reg=(cacheLer()||[]).find(function(r){return String(r.id)===String(id);});
+  if(!reg){ uiAlerta('Sugestão não encontrada. Feche e abra a tela novamente.'); return; }
+  var itens=[];
+  (reg.itens||[]).forEach(function(it,i){
+    var inp=document.getElementById('sug_'+id+'_'+i);
+    var q=inp?parseQtd(inp.value):Number(it.qtd)||0;
+    if(q>0) itens.push(Object.assign({},it,{qtd:q,qtd_pedida:q,qtd_entregue:q}));
+  });
+  if(!itens.length){ uiAlerta('Digite a quantidade que vai sair da loja (maior que zero) ou toque em "Não vou enviar".'); return; }
+  reg.itens=itens; reg.status='EM TRÂNSITO';
+  reg.data=hoje(); reg.hora=horaAgora(); reg.confirmado_por_loja=lojaAtual;
+  _salvarSugestao(reg);
+  uiAlerta('✅ Transferência confirmada e enviada para conferência da outra loja.');
+  renderNioSugestoes(); atualizarTodosBadges();
+}
+function recusarSugestaoNio(id){
+  var reg=(cacheLer()||[]).find(function(r){return String(r.id)===String(id);});
+  if(!reg) return;
+  reg.status='RECUSADA'; reg.recusada_em=hoje()+' '+horaAgora(); reg.recusada_por=lojaAtual;
+  _salvarSugestao(reg);
+  renderNioSugestoes(); atualizarTodosBadges();
+}
 function montarDestinosTransf(){
+  renderNioSugestoes();
   var destinos=lojaAtual==='JAQUEIRA'?[{id:'RECIFE',label:'🏪 Recife'},{id:'CLUBE_17',label:'🏢 Clube 17'}]:[{id:'JAQUEIRA',label:'🏠 Jaqueira'},{id:'CLUBE_17',label:'🏢 Clube 17'}];
   document.getElementById('transf-destinos').innerHTML=destinos.map(function(d){
     return '<button class="transf-dest-btn" data-dest="'+d.id+'" onclick="setTransfDestino(\''+d.id+'\')">👉 '+d.label+'</button>';
@@ -4939,6 +5010,30 @@ async function carregarTransfPendentes(){
     if(!(r.tipo_registro==='MOVIMENTO'&&r.tipo_mov==='TRANSFERENCIA'&&r.status==='EM TRÂNSITO'&&r.destino===lojaAtual)) return false;
     var d=dataReg(r); return d && d>=corte;
   });
+  // Transferência sem nenhum item com quantidade: não há o que receber — encerra sozinha
+  var _vazias=lista.filter(function(r){ return !(r.itens||[]).some(function(i){ return (Number(i.qtd)||0)>0; }); });
+  if(_vazias.length){
+    var _cache=cacheLer();
+    _vazias.forEach(function(v){
+      var k=_cache.findIndex(function(r){ return String(r.id)===String(v.id); });
+      if(k<0){ v.status='RECEBIDO'; _cache.push(v); k=_cache.length-1; }
+      _cache[k].status='RECEBIDO';
+      _cache[k].hora_recebimento=horaAgora();
+      _cache[k].loja_recebimento=lojaAtual;
+      _cache[k].obs_auto='Transferência sem itens — encerrada automaticamente';
+      filaAdicionar(_cache[k]);
+    });
+    cacheSalvar(_cache);
+    lista=lista.filter(function(r){ return _vazias.indexOf(r)<0; });
+    (async function(){
+      try{
+        var _l=cacheLer(); var _j=null; try{ _j=await fetchBinGet(); }catch(e){}
+        var _srv=(_j&&_j.requisicoes)?_j.requisicoes:[];
+        var _m=trimRequisicoes(_srv.concat(_l));
+        if(await fetchBinPut({requisicoes:_m})){ cacheSalvar(_m); filaLimpar(); }
+      }catch(e){ console.warn('sync vazias:',e.message); }
+    })();
+  }
   var sub=document.getElementById('receb-transf-sub');
   if(sub) sub.textContent=lista.length+' transferência(s) pendente(s) para '+lojaAtual;
   var el=document.getElementById('receb-transf-lista');
@@ -4962,9 +5057,12 @@ async function carregarTransfPendentes(){
       html+='<div style="padding:10px 14px;border-bottom:1px solid #F5F7FA;display:flex;align-items:center;gap:8px">';
       html+='<div style="flex:1"><div style="font-size:13px;font-weight:600">'+it.nome+' '+badgeUnid(it.unid)+'</div>';
       html+='<div style="font-size:11px;color:#636E72">Enviado: <strong>'+fmtQtd(it.qtd)+' '+(it.unid||'un')+'</strong> · confira na mesma medida</div></div>';
-      html+='<input type="text" inputmode="decimal" id="receb_'+reg.id+'_'+i+'" placeholder="'+it.qtd+'" value=""'
-           +' min="0" class="ped-inp pendente" style="width:70px;height:42px;font-size:16px;-webkit-user-select:text;user-select:text"'
-           +' oninput="validarQtdReceb(this,'+it.qtd+')" onclick="this.select()">';
+      var _qtdEnv=Number(it.qtd)||0;
+      var _val=_qtdEnv>0?'':'0';                       // item enviado com 0 já vem preenchido
+      var _cls=_qtdEnv>0?'ped-inp pendente':'ped-inp ok';
+      html+='<input type="text" inputmode="decimal" id="receb_'+reg.id+'_'+i+'" placeholder="?" value="'+_val+'"'
+           +' min="0" class="'+_cls+'" style="width:70px;height:42px;font-size:16px;-webkit-user-select:text;user-select:text"'
+           +' oninput="validarQtdReceb(this,'+_qtdEnv+')" onclick="this.select()">';
       html+='</div>';
     });
     html+='<div style="padding:10px 14px">';
@@ -4988,8 +5086,13 @@ async function confirmarRecebimento(regId){
   // Buscar itens — tentar tanto number quanto string como chave
   var itensOriginais=_transfItens[regId]||_transfItens[String(regId)]||[];
   if(!itensOriginais.length){
-    uiAlerta('Erro: itens da transferência não encontrados. Tente fechar e reabrir a tela.');
-    return;
+    // Transferência enviada SEM itens: em vez de travar a tela, encerra o recebimento vazio
+    var _regVazio=cacheLer().find(function(r){return Number(r.id)===Number(regId);});
+    if(!(_regVazio && (!_regVazio.itens || !_regVazio.itens.length))){
+      uiAlerta('Erro: itens da transferência não encontrados. Tente fechar e reabrir a tela.');
+      return;
+    }
+    itensOriginais=[];
   }
   // CONFERÊNCIA OBRIGATÓRIA: todo item precisa ser preenchido (sem laranja)
   var naoConferidos=[];
@@ -5065,8 +5168,14 @@ async function confirmarRecebimento(regId){
   // Sincronizar em background — não bloqueia
   (async function(){
     try{
-      await fetchBinPut({requisicoes:cacheLer()});
-      filaLimpar();
+      var _local=cacheLer();
+      var _j=null; try{ _j=await fetchBinGet(); }catch(eg){}
+      var _srv=(_j&&_j.requisicoes)?_j.requisicoes:[];
+      // dedupPorId mantém sempre o status MAIS AVANÇADO (local confirmado vence pendente da nuvem)
+      var _merge=trimRequisicoes(_srv.concat(_local));
+      var _ok=await fetchBinPut({requisicoes:_merge});
+      if(_ok){ cacheSalvar(_merge); filaLimpar(); }   // só limpa a fila se o servidor aceitou
+      else { console.warn('sync: PUT recusado, fila mantida'); }
     }catch(e){ console.warn('sync:',e.message); }
   })();
   if(temDiverg){
@@ -5904,65 +6013,10 @@ function registrar(tipo,loja,nome,qtd,obs){
   E.mov.unshift({t:tipo, l:loja, n:nome, q:r3(qtd), u:c?c.unid:'', o:obs||'', em:new Date().toISOString()});
   if(E.mov.length>400) E.mov.length=400;
 }
-
-// ═══════════════════════════════════════════════════════════════
-// CORREÇÃO 8 — PONTO DE PEDIDO
-// Antes o alerta só acendia quando o saldo JÁ tinha furado o mínimo.
-// Mas o mínimo é a reserva que precisa cobrir o tempo de entrega —
-// avisar ali é avisar tarde. Agora existe um nível no meio:
-//   máximo → PONTO DE PEDIDO (avisa) → mínimo (reserva) → zero
-// Fórmula: consumo médio por dia × (prazo do fornecedor + segurança)
-// ═══════════════════════════════════════════════════════════════
-var PRAZO_PADRAO=4, SEG_PADRAO=2, JANELA_MEDIA=30;
-
-// consumo médio por dia, tirado das saídas reais dos últimos 30 dias
-function consumoMedioDia(loja,nome){
-  var lim=Date.now()-JANELA_MEDIA*86400000, tot=0, dias={};
-  (E.mov||[]).forEach(function(m){
-    if(!m||m.l!==loja||m.n!==nome) return;
-    if(m.t!=='SAÍDA') return;                    // só o que saiu de verdade
-    var t=Date.parse(m.em||''); if(!t||t<lim) return;
-    tot+=Math.abs(pq(m.q));
-    dias[String(m.em).slice(0,10)]=1;
-  });
-  if(!tot) return 0;
-  var nd=Math.max(Object.keys(dias).length, 1);
-  // se só houve movimento em poucos dias, usa a janela cheia para não inflar
-  return r3(tot/Math.max(nd, Math.min(JANELA_MEDIA, 7)));
-}
-function prazoDe(c){ var v=pq(c&&c.prazoForn); return v>0?v:PRAZO_PADRAO; }
-function segDe(c){   var v=pq(c&&c.diasSeg);   return v>0?v:SEG_PADRAO;   }
-
-// ponto de pedido: o que você definiu à mão, ou o calculado pela média
-function pontoPedido(c,loja){
-  var manual=pq(c.pp&&c.pp[loja]);
-  if(manual>0) return {v:manual, auto:false, med:consumoMedioDia(loja,c.nome)};
-  var med=consumoMedioDia(loja,c.nome);
-  var mn=pq(c.min&&c.min[loja]);
-  if(!med) return {v:0, auto:true, med:0};
-  var v=r3(med*(prazoDe(c)+segDe(c)));
-  if(mn && v<mn) v=r3(mn*1.35);      // nunca abaixo do mínimo: perderia o sentido
-  return {v:v, auto:true, med:med};
-}
-function coberturaDias(c,loja){
-  var med=consumoMedioDia(loja,c.nome);
-  if(!med) return null;
-  return r3(saldo(loja,c.nome)/med);
-}
-window.estPPTexto=function(c,loja){
-  var pp=pontoPedido(c,loja);
-  if(!pp.v) return 'Sem consumo registrado ainda — o ponto de pedido aparece depois das primeiras saídas.';
-  return 'Ponto de pedido: '+fq(pp.v)+' '+(c.unid||'')+
-         (pp.auto?' (calculado: '+fq(pp.med)+'/dia × '+(prazoDe(c)+segDe(c))+' dias)':' (definido à mão)');
-};
-
 function situacao(c,loja){
   var s=saldo(loja,c.nome), mn=pq(c.min&&c.min[loja]), mx=pq(c.max&&c.max[loja]);
   if(s<=0)     return {k:'rup', t:'Zerado',  cor:'var(--verm)',    bg:'var(--verm-bg)'};
   if(mn&&s<mn) return {k:'bx',  t:'Baixo',   cor:'var(--laranja)', bg:'var(--laranja-bg)'};
-  // CORREÇÃO 8: entre o mínimo e o máximo, avisa ANTES de furar a reserva
-  var pp=pontoPedido(c,loja);
-  if(pp.v && s<=pp.v) return {k:'pp', t:'Comprar', cor:'#8D6E00', bg:'var(--amar-bg)'};
   if(mx&&s>mx) return {k:'ex',  t:'Acima',   cor:'var(--azul)',    bg:'var(--azul-bg)'};
   return         {k:'ok',  t:'Ok',      cor:'var(--verde-m)', bg:'var(--verde-bg)'};
 }
@@ -6221,7 +6275,7 @@ function filtrada(){
     if(b && K(c.nome).indexOf(b)<0 && String(c.cat||'').toUpperCase().indexOf(b)<0) return false;
     if(eFiltro){
       var s=situacao(c,lj);
-      if(eFiltro==='prob' && s.k!=='rup' && s.k!=='bx' && s.k!=='pp') return false;
+      if(eFiltro==='prob' && s.k!=='rup' && s.k!=='bx') return false;
       if(eFiltro==='venc' && !vencidos(lj,c.nome).length) return false;
       if(eFiltro==='tem'  && saldo(lj,c.nome)<=0) return false;
     }
@@ -6237,13 +6291,12 @@ function renderEstoque(){
   if(!top||!lista) return;
 
   if(eTab==='saldo'){
-    var L=listaCad().filter(function(c){return p2PertenceLoja(c,lj);}), rup=0,bx=0,vc=0,pp=0;
-    L.forEach(function(c){ var s=situacao(c,lj); if(s.k==='rup')rup++; if(s.k==='bx')bx++; if(s.k==='pp')pp++; if(vencidos(lj,c.nome).length)vc++; });
+    var L=listaCad().filter(function(c){return p2PertenceLoja(c,lj);}), rup=0,bx=0,vc=0;
+    L.forEach(function(c){ var s=situacao(c,lj); if(s.k==='rup')rup++; if(s.k==='bx')bx++; if(vencidos(lj,c.nome).length)vc++; });
     top.innerHTML=
       '<div class="est-cards">'+
         '<div class="est-card" style="background:var(--verm-bg);color:var(--verm)"><b>'+rup+'</b><span>Zerados</span></div>'+
         '<div class="est-card" style="background:var(--laranja-bg);color:var(--laranja)"><b>'+bx+'</b><span>Abaixo do mín.</span></div>'+
-        '<div class="est-card" style="background:var(--amar-bg);color:#8D6E00"><b>'+pp+'</b><span>Hora de comprar</span></div>'+
         '<div class="est-card" style="background:var(--amar-bg);color:#8D6E00"><b>'+vc+'</b><span>Vencidos</span></div>'+
       '</div>'+
       '<div class="est-p2-info"><b>Comparação rápida:</b> mínimo à esquerda, saldo atual no centro e máximo à direita. Itens sem dados de estoque continuam no Cadastro Mestre, sem poluir esta tela.</div>'+
@@ -6652,11 +6705,6 @@ function telaNovo(){
     '</div>'+
     '<label class="est-lbl">Custo por unidade (R$)</label>'+
     '<input id="nv-cst" class="est-inp" inputmode="decimal" value="0">'+
-    '<label class="est-lbl">Prazo do fornecedor (dias)</label>'+
-    '<input id="nv-prz" class="est-inp" inputmode="numeric" placeholder="4" value="">'+
-    '<label class="est-lbl">Dias de segurança</label>'+
-    '<input id="nv-seg" class="est-inp" inputmode="numeric" placeholder="2" value="">'+
-    '<div class="est-dica">O app avisa para comprar quando o saldo chegar em <b>consumo por dia × (prazo + segurança)</b>. Deixe em branco para usar 4 e 2.</div>'+
     '<label class="est-lbl">Vale para qual loja?</label>'+
     '<select id="nv-loja" class="est-inp">'+
       '<option value="AMBAS">As duas (Jaqueira e Recife)</option>'+
@@ -6678,8 +6726,7 @@ window.estSalvarNovo=function(){
   E.cad[K(nome)]={ nome:nome, cat:g('nv-cat')||'➕ ADICIONADOS NO APP', unid:un,
                    validade:val, lote:val>0, custo:pq(g('nv-cst')),
                    min:{JAQUEIRA:pq(g('nv-mnj')), RECIFE:pq(g('nv-mnr'))}, max:{JAQUEIRA:0,RECIFE:0},
-                   ativo:true, manual:true, lojas:lojas,
-                   prazoForn:pq(g('nv-prz')), diasSeg:pq(g('nv-seg')), pp:{JAQUEIRA:0,RECIFE:0} };
+                   ativo:true, manual:true, lojas:lojas };
   // completa os campos que faltavam e registra o apelido: sem isso o item
   // ficava fora da busca por nome normalizado e virava duplicata depois
   garantirCampos(E.cad[K(nome)]); registrarAlias(E.cad[K(nome)],nome);
@@ -6976,9 +7023,7 @@ window.estExportarPlanilha=function(){
   var L=listaCad();
   if(!L.length){ UIC.aviso('Nenhum item no cadastro.','erro'); return; }
   var cab=['ITEM','CATEGORIA','UNIDADE','SALDO_JAQUEIRA','SALDO_RECIFE',
-           'MIN_JAQUEIRA','MAX_JAQUEIRA','MIN_RECIFE','MAX_RECIFE',
-           'PP_JAQUEIRA','PP_RECIFE','PRAZO_FORNECEDOR','DIAS_SEGURANCA',
-           'CONSUMO_DIA_JAQUEIRA','CONSUMO_DIA_RECIFE','COBERTURA_DIAS_JAQUEIRA','CUSTO',
+           'MIN_JAQUEIRA','MAX_JAQUEIRA','MIN_RECIFE','MAX_RECIFE','CUSTO',
            'CONTROLA_VALIDADE','VENC_JAQUEIRA','VENC_RECIFE','LOJAS',
            'CONTAGEM_JAQUEIRA','CONTAGEM_RECIFE'];
   var linhas=L.map(function(c){
@@ -6987,10 +7032,6 @@ window.estExportarPlanilha=function(){
       _csvC(c.nome), _csvC(c.cat||''), _csvC(c.unid||'unid'),
       fq(saldo('JAQUEIRA',c.nome)), fq(saldo('RECIFE',c.nome)),
       fq(pq(mn.JAQUEIRA)), fq(pq(mx.JAQUEIRA)), fq(pq(mn.RECIFE)), fq(pq(mx.RECIFE)),
-      fq(pontoPedido(c,'JAQUEIRA').v), fq(pontoPedido(c,'RECIFE').v),
-      fq(prazoDe(c)), fq(segDe(c)),
-      fq(consumoMedioDia('JAQUEIRA',c.nome)), fq(consumoMedioDia('RECIFE',c.nome)),
-      (function(){var v=coberturaDias(c,'JAQUEIRA'); return v==null?'':fq(v);})(),
       fq(pq(c.custo)), c.lote?'SIM':'NAO',
       _csvC(vencMaisProx('JAQUEIRA',c.nome)), _csvC(vencMaisProx('RECIFE',c.nome)),
       _csvC((c.lojas||['JAQUEIRA','RECIFE']).join('+')),
@@ -7054,12 +7095,7 @@ function _processarPlanilha(txt){
     if(un  && un !==(c.unid||''))             alt.unid=un;
     if(cst!==null && cst!=='' && pq(cst)!==pq(c.custo)) alt.custo=pq(cst);
     if(val)                                   alt.lote=(val.toUpperCase()==='SIM');
-    var pz=pega('PRAZO_FORNECEDOR'), sg=pega('DIAS_SEGURANCA');
-    if(pz!==null&&pz!==''&&pq(pz)!==pq(c.prazoForn)) alt.prazoForn=pq(pz);
-    if(sg!==null&&sg!==''&&pq(sg)!==pq(c.diasSeg))   alt.diasSeg=pq(sg);
     ['JAQUEIRA','RECIFE'].forEach(function(lj){
-      var pp=pega('PP_'+lj);
-      if(pp!==null&&pp!=='' && pq(pp)!==pq((c.pp||{})[lj])){ alt.pp=alt.pp||{}; alt.pp[lj]=pq(pp); }
       var mn=pega('MIN_'+lj), mx=pega('MAX_'+lj);
       if(mn!==null&&mn!=='' && pq(mn)!==pq((c.min||{})[lj])){ alt.min=alt.min||{}; alt.min[lj]=pq(mn); }
       if(mx!==null&&mx!=='' && pq(mx)!==pq((c.max||{})[lj])){ alt.max=alt.max||{}; alt.max[lj]=pq(mx); }
@@ -7099,9 +7135,6 @@ function _processarPlanilha(txt){
         if(a.unid!==undefined) c.unid=a.unid;
         if(a.custo!==undefined)c.custo=a.custo;
         if(a.lote!==undefined) c.lote=a.lote;
-        if(a.prazoForn!==undefined) c.prazoForn=a.prazoForn;
-        if(a.diasSeg!==undefined)   c.diasSeg=a.diasSeg;
-        if(a.pp){ c.pp=c.pp||{}; Object.keys(a.pp).forEach(function(l){ c.pp[l]=a.pp[l]; }); }
         if(a.min){ c.min=c.min||{}; Object.keys(a.min).forEach(function(l){ c.min[l]=a.min[l]; }); }
         if(a.max){ c.max=c.max||{}; Object.keys(a.max).forEach(function(l){ c.max[l]=a.max[l]; }); }
         nCad++;
@@ -11825,7 +11858,7 @@ setTimeout(migrar43,600);
 .toledo-prod-sub{margin-top:7px;font-size:10.5px;line-height:1.4;color:#4A6756}.toledo-sem{margin:5px 0 9px;padding:8px 10px;border:1px dashed #C6A86A;border-radius:10px;background:#FFF8E8;color:#74551D;font-size:10.5px;line-height:1.4}
 </style>
 <script id="v2650-version">
-(function(){function v(){document.title='☕ Café Jaqueira · V26.9.0';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · NIO ativo em modo operacional';});}document.addEventListener('DOMContentLoaded',function(){setTimeout(v,100)});setTimeout(v,300);})();
+(function(){function v(){document.title='☕ Café Jaqueira · V26.8.3-CORRIGIDO';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · NIO ativo em modo operacional';});}document.addEventListener('DOMContentLoaded',function(){setTimeout(v,100)});setTimeout(v,300);})();
 </script>
 
 <style id="v2652-style">
@@ -12094,7 +12127,7 @@ window.abrirSetor=function(id){
   return abrirSetorAnterior.apply(this,arguments)
 };
 
-function preparar(){document.title='☕ Café Jaqueira · V26.9.0';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'});migrar();setTimeout(renderSetoresV2654,250)}
+function preparar(){document.title='☕ Café Jaqueira · V26.8.3-CORRIGIDO';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'});migrar();setTimeout(renderSetoresV2654,250)}
 document.addEventListener('DOMContentLoaded',function(){setTimeout(preparar,500)});setTimeout(preparar,900);
 })();
 </script>
@@ -12352,7 +12385,7 @@ if(window.abrirPainelV263){
 }
 
 function preparar2655(){
-  document.title='☕ Café Jaqueira · V26.9.0';
+  document.title='☕ Café Jaqueira · V26.8.3-CORRIGIDO';
   document.querySelectorAll('.vp-ver').forEach(function(e){
     e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto';
   });
@@ -12433,7 +12466,7 @@ if(setLojaAnterior){
 }
 
 function prepararV2656(){
-  document.title='☕ Café Jaqueira · V26.9.0';
+  document.title='☕ Café Jaqueira · V26.8.3-CORRIGIDO';
   document.querySelectorAll('.vp-ver').forEach(function(e){
     e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto';
   });
@@ -12539,7 +12572,7 @@ function testes7(){
 window.v2657ExecutarTestes=testes7;
 
 function preparar7(){
-  document.title='☕ Café Jaqueira · V26.9.0';
+  document.title='☕ Café Jaqueira · V26.8.3-CORRIGIDO';
   document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'});
   testes7();window.v2657RecalcularAlertas();
 }
@@ -12622,7 +12655,7 @@ window.filtroPlanoProducaoV2653=function(v,b){var r=filtroAnterior65.apply(this,
 
 window.abrirOrdemSetorV2660=function(){var E=E65(),t=E&&E.testeCicloV2660,o=t&&E.prodOrdens&&E.prodOrdens.find(function(x){return x.id===t.ordemProducaoId});if(!t)return;focoOrdem65=o&&o.id||t.ordemProducaoId||'';var ids={Cozinha:(t.loja==='RECIFE'?'prod_coz_rec':'prod_coz_jaq'),Confeitaria:'confeitaria_jaq','Cortes Proteína':(t.loja==='RECIFE'?'prod_prot_rec':'prod_prot_jaq'),Bar:(t.loja==='RECIFE'?'prod_bar_rec':'prod_bar_jaq'),'Torrefação':'torrefacao_rec'};if(ids[t.setor])window.abrirSetor(ids[t.setor]);setTimeout(function(){abrirFocado65(t.setor,focoOrdem65)},120)};
 
-function preparar65(){document.title='☕ Café Jaqueira · V26.9.0';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'})}
+function preparar65(){document.title='☕ Café Jaqueira · V26.8.3-CORRIGIDO';document.querySelectorAll('.vp-ver').forEach(function(e){e.textContent='V26.7.9 · ordens visíveis no setor e no dia correto'})}
 document.addEventListener('DOMContentLoaded',function(){setTimeout(preparar65,700)});setTimeout(preparar65,1100);
 })();
 </script>
@@ -12666,9 +12699,19 @@ function limparTestes(){
 }
 function lotesPendentes(){try{return typeof cacheLer==='function'?(cacheLer()||[]):[]}catch(e){return[]}}
 function qtdTransferenciaPendente(origem,destino,nome){return r3(lotesPendentes().filter(function(x){return x.tipo_registro==='MOVIMENTO'&&x.tipo_mov==='TRANSFERENCIA'&&x.status==='EM TRÂNSITO'&&x.origem===origem&&x.destino===destino}).reduce(function(s,r){return s+(r.itens||[]).filter(function(i){return norm(i.nome)===norm(nome)}).reduce(function(a,i){return a+num(i.qtd)},0)},0))}
+function transfPendenteTemItem(origem,destino,nome){
+  return lotesPendentes().some(function(x){
+    return x.tipo_registro==='MOVIMENTO'&&x.tipo_mov==='TRANSFERENCIA'&&
+           (x.status==='EM TRÂNSITO'||x.status==='SUGERIDA')&&
+           x.origem===origem&&x.destino===destino&&(x.itens||[]).some(function(i){return norm(i.nome)===norm(nome);});
+  });
+}
 function criarTransferencia(origem,destino,itens,motivo){
   itens=(itens||[]).filter(function(x){return num(x.qtd)>0});if(!itens.length)return null;
-  var id=Date.now()+(seqMov++),reg={id:id,tipo_registro:'MOVIMENTO',tipo_mov:'TRANSFERENCIA',loja:origem,origem:origem,destino:destino,data:br(),hora:hora(),status:'EM TRÂNSITO',setorNome:'Equalização automática do NIO',setorIcone:'🔄',origemNio:true,nioVersao:'V26.7.9',motivo:motivo||'Equalização antes da compra',itens:itens.map(function(x){var c=window.ESTOQUE.item(x.nome)||{};return{nome:c.nome||x.nome,qtd:r3(x.qtd),qtd_pedida:r3(x.qtd),qtd_entregue:r3(x.qtd),status:'ok',unid:x.unid||c.unid||'unid',lote:'—',validade:'—'}})};
+  // Já existe transferência EM TRÂNSITO com esse item para o mesmo destino? Não duplica.
+  itens=itens.filter(function(x){ return !transfPendenteTemItem(origem,destino,x.nome); });
+  if(!itens.length)return null;
+  var id=Date.now()+(seqMov++),reg={id:id,tipo_registro:'MOVIMENTO',tipo_mov:'TRANSFERENCIA',loja:origem,origem:origem,destino:destino,data:br(),hora:hora(),status:'SUGERIDA',setorNome:'Sugestão automática do NIO',setorIcone:'🔄',origemNio:true,nioVersao:'V26.7.9',motivo:motivo||'Equalização antes da compra',itens:itens.map(function(x){var c=window.ESTOQUE.item(x.nome)||{};return{nome:c.nome||x.nome,qtd:r3(x.qtd),qtd_pedida:r3(x.qtd),qtd_entregue:r3(x.qtd),status:'ok',unid:x.unid||c.unid||'unid',lote:'—',validade:'—'}})};
   try{var a=cacheLer()||[];a.push(reg);cacheSalvar(a);if(typeof filaAdicionar==='function')filaAdicionar(reg)}catch(e){console.warn('NIO transferência:',e)}return reg;
 }
 function itemEmCompra(loja,nome){var p=P(),k=norm(nome);if(!p)return false;var c=(p.cotacoes||[]).some(function(x){return x.status!=='cancelada'&&x.status!=='aprovada'&&(x.itens||[]).some(function(i){return !i.cancelado&&!i.aprovado&&i.loja===loja&&norm(i.nome)===k})});if(c)return true;return(p.ord||[]).some(function(o){return o.loja===loja&&o.status==='aguardando'&&(o.itens||[]).some(function(i){return norm(i.nome)===k})})}
@@ -13344,7 +13387,7 @@ var PERMITIDO = {
 };
 
 var perfil=null;
-var VERSAO='V26.9.0';
+var VERSAO='V26.8.3-CORRIGIDO';
 function exige(area){
   var p=PINS[area];
   return !!(p && String(p).trim());   // senha em branco = área aberta
